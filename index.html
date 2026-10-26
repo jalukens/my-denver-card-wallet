@@ -624,12 +624,6 @@ textarea.field { resize: none; min-height: 72px; }
       <div class="body">
         <section><div class="sec-h"><h2>Your funding</h2><small>Tap a stream to see where it works</small></div>
           <div class="pockets">${pocketCard('ccap', true)}${pocketCard('myspark')}${pocketCard('sgo')}</div></section>
-        ${ask ? `<section><div class="sec-h"><h2>Needs details</h2><small>${ask} item${ask > 1 ? 's' : ''}</small></div><div class="stack">
-          ${needs.map((t) => `<div class="req swipe">
-            <div class="req-top"><span class="pk-ic ccap">${ic('tap', 16)}</span><div><div class="req-who">Card tap at ${esc(prov(t.prov).name)}</div><div class="req-what">Tell them who and what it was for so the payment links to the right sign-up.</div></div><div class="req-amt num">${money(t.amount)}</div></div>
-            <div class="req-acts"><button class="btn navy sm" data-act="details" data-id="${t.id}">Add details</button></div>
-          </div>`).join('')}
-        </div></section>` : ''}
         <section><div class="sec-h"><h2>Activity</h2></div><div class="tx-list">${S.txns.map((t) => txHTML(t)).join('')}</div></section>
       </div>`;
   }
