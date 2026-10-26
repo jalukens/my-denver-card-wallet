@@ -519,7 +519,7 @@ textarea.field { resize: none; min-height: 72px; }
       providers: freshProviders(),
       txns: [
         { id: 't6', date: 'Oct 20', kind: 'pay', method: 'card', pocket: 'myspark', prov: 'dpr', kid: null, forLabel: null, ref: 'MDC-8HW2', enroll: null, note: '', amount: 40, status: 'need' },
-        { id: 't5', date: 'Oct 14', kind: 'pay', method: 'request', pocket: 'ccap', prov: 'ls', kid: 'lucia', forLabel: 'Tuition · Oct 13 – Oct 24', ref: 'MDC-3RTP', enroll: 'Invoice LS-1031', note: '', amount: 590, status: 'ok' },
+        { id: 't5', date: 'Oct 14', kind: 'pay', method: 'app', pocket: 'ccap', prov: 'ls', kid: 'lucia', forLabel: 'Tuition: Oct 13 – Oct 24, Toddler room, invoice LS-1031', ref: 'MDC-3RTP', enroll: 'Account LS-0193', note: '', amount: 590, status: 'ok' },
         { id: 't4', date: 'Oct 1', kind: 'load', pocket: 'ccap', title: 'October CCAP authorization', amount: 1180 },
         { id: 't3', date: 'Sep 30', kind: 'pay', method: 'app', pocket: 'myspark', prov: 'dsa', kid: 'sofia', forLabel: 'Code Explorers · Fall 2026', ref: 'MDC-4QJ2', enroll: 'Enrollment DSA-2187', note: 'Sofia will miss Oct 9 for a school field trip.', amount: 150, status: 'ok' },
         { id: 't2', date: 'Sep 12', kind: 'pay', method: 'app', pocket: 'myspark', prov: 'dpr', kid: 'diego', forLabel: 'Soccer Stars · Fall 2026', ref: 'MDC-9KD1', enroll: 'Enrollment DPR-87120', note: 'Tue/Thu group with Coach Ana, please.', amount: 100, status: 'ok' },
@@ -528,7 +528,6 @@ textarea.field { resize: none; min-height: 72px; }
         { id: 't0', date: 'Aug 15', kind: 'load', pocket: 'sgo', title: 'SGO scholarship funds added', amount: 2000 }
       ],
       requests: [
-        { id: 'r1', prov: 'ls', pocket: 'ccap', kid: 'lucia', forLabel: 'Tuition · Oct 27 – Oct 31', ref: 'Invoice LS-1042', amount: 295, sent: 'Oct 24' },
         { id: 'r2', prov: 'dsa', pocket: 'myspark', kid: 'sofia', forLabel: 'Robotics Club · Winter 2027', ref: 'Enrollment DSA-2291', session: 'DSA-2291', amount: 180, sent: 'Oct 22' }
       ],
       screen: 'wallet',
@@ -609,8 +608,7 @@ textarea.field { resize: none; min-height: 72px; }
   // ---------- Phone: screens ----------
   function walletScreen() {
     const needs = S.txns.filter((t) => t.status === 'need');
-    const reqs = S.requests;
-    const ask = reqs.length + needs.length;
+    const ask = needs.length;
     return `<div class="app-head">
         <div class="ah-row"><div class="logo"><b>MY</b><span>Denver Card</span></div>
           <button class="icon-btn" data-act="soon" data-what="Notifications" aria-label="Notifications">${ic('bell', 16)}${ask ? '<span class="dot"></span>' : ''}</button></div>
@@ -626,12 +624,7 @@ textarea.field { resize: none; min-height: 72px; }
       <div class="body">
         <section><div class="sec-h"><h2>Your funding</h2><small>Tap a stream to see where it works</small></div>
           <div class="pockets">${pocketCard('ccap', true)}${pocketCard('myspark')}${pocketCard('sgo')}</div></section>
-        ${ask ? `<section><div class="sec-h"><h2>Needs your OK</h2><small>${ask} item${ask > 1 ? 's' : ''}</small></div><div class="stack">
-          ${reqs.map((r) => { const p = prov(r.prov); return `<div class="req">
-            <div class="req-top"><span class="pk-ic ${r.pocket}">${ic('inbox', 16)}</span><div><button class="req-who tx-title" data-act="go" data-to="prov:${p.id}">${esc(p.name)}</button><div class="req-what">Requests payment for ${KIDS[r.kid].name}: ${esc(r.forLabel)}</div></div><div class="req-amt num">${money(r.amount)}</div></div>
-            <div class="req-tags"><span class="chip ${r.pocket}">From ${POCKETS[r.pocket].name}</span><span class="chip">${esc(r.ref)}</span><span class="chip">Sent ${r.sent}</span></div>
-            <div class="req-acts"><button class="btn quiet sm" data-act="decline" data-id="${r.id}">Decline</button><button class="btn teal sm" data-act="approve" data-id="${r.id}" ${r.amount > S.bal[r.pocket] ? 'disabled' : ''}>Approve and pay</button></div>
-          </div>`; }).join('')}
+        ${ask ? `<section><div class="sec-h"><h2>Needs details</h2><small>${ask} item${ask > 1 ? 's' : ''}</small></div><div class="stack">
           ${needs.map((t) => `<div class="req swipe">
             <div class="req-top"><span class="pk-ic ccap">${ic('tap', 16)}</span><div><div class="req-who">Card tap at ${esc(prov(t.prov).name)}</div><div class="req-what">Tell them who and what it was for so the payment links to the right sign-up.</div></div><div class="req-amt num">${money(t.amount)}</div></div>
             <div class="req-acts"><button class="btn navy sm" data-act="details" data-id="${t.id}">Add details</button></div>
