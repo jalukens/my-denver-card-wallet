@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display&family=DM+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: phone prototype beside a live "provider view" ledger, design notes below.
+/* Layout: phone prototype on the left, a demo guide and discussion notes on the right.
    Single light theme on purpose: it mirrors the My Denver Youth app's civic palette. */
 :root {
   color-scheme: light;
@@ -22,13 +22,14 @@
   --amber: #F5A623;
   --amber-ink: #8A5A06;
   --amber-soft: #FDF2DD;
+  --plum: #5B4B8A;
+  --plum-soft: #EEEAF7;
   --cream: #F5F4F0;
   --paper: #FFFFFF;
   --line: #E4E2D9;
   --muted: #6B6B62;
   --faint: #8A8A82;
   --red: #C8402B;
-  --red-soft: #FCE9E5;
   --page: #E9EBE6;
   --display: 'DM Serif Display', Georgia, 'Times New Roman', serif;
   --body: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -38,7 +39,7 @@
 body { background: var(--page); color: var(--navy); font-family: var(--body); font-size: 15px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
 button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; padding: 0; }
 input, textarea { font: inherit; color: var(--navy); }
-button:focus-visible, input:focus-visible, textarea:focus-visible, .opt:focus-within { outline: 2px solid var(--teal); outline-offset: 2px; }
+button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
 .mono { font-family: var(--mono); font-size: 0.92em; letter-spacing: 0.01em; }
 .num { font-variant-numeric: tabular-nums; }
 
@@ -48,24 +49,19 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, .opt:focus-wi
 .eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal); }
 .top h1 { font-family: var(--display); font-weight: 400; font-size: clamp(28px, 4vw, 38px); line-height: 1.1; margin: 6px 0 8px; text-wrap: balance; }
 .top h1 span { color: var(--amber-ink); }
-.top p { margin: 0; max-width: 68ch; color: var(--muted); }
+.top p { margin: 0; max-width: 70ch; color: var(--muted); }
 .top-row { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: flex-end; justify-content: space-between; }
 .reset { font-size: 13px; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
-.tabs { display: none; margin-top: 16px; background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 4px; gap: 4px; }
-.tabs button { flex: 1; padding: 8px 12px; border-radius: 999px; font-weight: 600; font-size: 14px; color: var(--muted); }
-.tabs button[aria-selected="true"] { background: var(--navy); color: #fff; }
 
-.stage { display: grid; grid-template-columns: 410px minmax(0, 1fr); gap: 28px; align-items: start; padding-bottom: 32px; }
+.stage { display: grid; grid-template-columns: 410px minmax(0, 1fr); gap: 28px; align-items: start; padding-bottom: 48px; }
 @media (max-width: 999px) {
   .stage { grid-template-columns: minmax(0, 1fr); }
-  .tabs { display: flex; }
-  .stage[data-tab="family"] .col-provider, .stage[data-tab="provider"] .col-phone { display: none; }
   .col-phone { display: flex; justify-content: center; }
 }
 
 /* ---------- Phone ---------- */
-.phone { width: 390px; max-width: 100%; height: 780px; background: var(--cream); border: 10px solid var(--navy); border-radius: 44px; overflow: hidden; position: relative; display: flex; flex-direction: column; box-shadow: 0 24px 60px -24px rgba(13, 27, 53, 0.45); }
-@media (max-width: 440px) { .phone { border-width: 6px; border-radius: 30px; height: 740px; } }
+.phone { width: 390px; max-width: 100%; height: 800px; background: var(--cream); border: 10px solid var(--navy); border-radius: 44px; overflow: hidden; position: relative; display: flex; flex-direction: column; box-shadow: 0 24px 60px -24px rgba(13, 27, 53, 0.45); }
+@media (max-width: 440px) { .phone { border-width: 6px; border-radius: 30px; height: 760px; } }
 .scroll { flex: 1; overflow-y: auto; scrollbar-width: none; }
 .scroll::-webkit-scrollbar { display: none; }
 
@@ -94,7 +90,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, .opt:focus-wi
 .btn[disabled] { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
 
 .body { padding: 4px 16px 24px; display: flex; flex-direction: column; gap: 22px; }
-.sec-h { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+.sec-h { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; gap: 8px; }
 .sec-h h2 { font-family: var(--display); font-weight: 400; font-size: 19px; margin: 0; }
 .sec-h small { font-size: 12px; color: var(--faint); }
 .stack { display: flex; flex-direction: column; gap: 10px; }
@@ -110,35 +106,46 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, .opt:focus-wi
 .req-acts .btn { flex: 1; }
 
 .chip { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 600; padding: 3px 8px; border-radius: 999px; background: var(--cream); color: var(--navy-mid); white-space: nowrap; }
-.chip.ost { background: var(--teal-soft); color: var(--teal); }
-.chip.cc { background: var(--amber-soft); color: var(--amber-ink); }
+.chip.myspark { background: var(--teal-soft); color: var(--teal); }
+.chip.ccap { background: var(--amber-soft); color: var(--amber-ink); }
+.chip.sgo { background: var(--plum-soft); color: var(--plum); }
 .chip.kid { background: #EEF0F6; color: var(--navy-mid); }
+.chip.off { background: transparent; border: 1px dashed var(--line); color: var(--faint); text-decoration: line-through; }
 
 .pk-ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; flex: none; }
-.pk-ic.ost { background: var(--teal-soft); color: var(--teal); }
-.pk-ic.cc { background: var(--amber-soft); color: var(--amber-ink); }
+.pk-ic.myspark { background: var(--teal-soft); color: var(--teal); }
+.pk-ic.ccap { background: var(--amber-soft); color: var(--amber-ink); }
+.pk-ic.sgo { background: var(--plum-soft); color: var(--plum); }
 .pk-ic.load { background: #EEF0F6; color: var(--navy-mid); }
 
-.pocket { display: block; width: 100%; text-align: left; background: var(--paper); border-radius: 16px; padding: 14px; border: 1px solid var(--line); }
+/* funding stream cards */
+.pockets { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pocket { display: block; width: 100%; text-align: left; background: var(--paper); border-radius: 16px; padding: 14px; border: 1px solid var(--line); min-width: 0; }
 .pocket:hover { border-color: #CFCCC0; }
+.pocket.feature { grid-column: 1 / -1; background: linear-gradient(135deg, #FFF8EA 0%, #FDEFD2 100%); border-color: #F1D9A6; }
 .pk-top { display: flex; align-items: center; gap: 10px; }
 .pk-name { font-weight: 700; font-size: 15px; }
 .pk-src { font-size: 12.5px; color: var(--muted); }
 .pk-top .chev { margin-left: auto; color: var(--faint); }
-.pk-bal { font-family: var(--display); font-size: 28px; margin-top: 10px; line-height: 1.1; }
-.pk-bal small { font-family: var(--body); font-size: 13px; color: var(--muted); }
-.bar { height: 6px; border-radius: 6px; background: var(--cream); margin-top: 8px; overflow: hidden; }
+.pk-bal { font-family: var(--display); font-size: 26px; margin-top: 10px; line-height: 1.1; }
+.pocket.feature .pk-bal { font-size: 34px; }
+.pk-bal small { font-family: var(--body); font-size: 12.5px; color: var(--muted); }
+.bar { height: 6px; border-radius: 6px; background: rgba(13,27,53,0.07); margin-top: 8px; overflow: hidden; }
 .bar i { display: block; height: 100%; border-radius: 6px; transition: width 600ms cubic-bezier(.2,.8,.2,1); }
-.bar.ost i { background: var(--teal); }
-.bar.cc i { background: var(--amber); }
+.bar.myspark i { background: var(--teal); }
+.bar.ccap i { background: var(--amber); }
+.bar.sgo i { background: var(--plum); }
 .pk-foot { font-size: 12px; color: var(--muted); margin-top: 8px; }
+.pockets .pocket:not(.feature) .pk-top { flex-wrap: wrap; }
+.pockets .pocket:not(.feature) .pk-src { font-size: 12px; }
 
 .tx-list { background: var(--paper); border-radius: 16px; border: 1px solid var(--line); }
 .tx { display: flex; gap: 10px; padding: 12px 14px; }
 .tx + .tx { border-top: 1px solid var(--line); }
 .tx-main { flex: 1; min-width: 0; }
 .tx-row { display: flex; justify-content: space-between; gap: 8px; }
-.tx-title { font-weight: 700; font-size: 14px; }
+.tx-title { font-weight: 700; font-size: 14px; text-align: left; }
+button.tx-title:hover { text-decoration: underline; text-underline-offset: 2px; }
 .tx-amt { font-weight: 700; font-size: 14px; white-space: nowrap; }
 .tx-amt.in { color: var(--teal); }
 .tx-for { font-size: 13px; color: var(--navy-mid); margin-top: 1px; }
@@ -147,26 +154,69 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, .opt:focus-wi
 .st { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 600; }
 .st.ok { color: var(--teal); }
 .st.rev { color: var(--navy-mid); }
-.st.need { color: var(--amber-ink); }
 .linkbtn { font-size: 12px; font-weight: 700; color: var(--amber-ink); text-decoration: underline; text-underline-offset: 2px; }
+.empty { padding: 16px; text-align: center; color: var(--faint); font-size: 13.5px; }
 
 /* sub-page header */
-.sub-head { position: sticky; top: 0; z-index: 3; display: flex; align-items: center; gap: 8px; padding: 12px 12px; background: var(--paper); border-bottom: 1px solid var(--line); }
-.sub-head h2 { font-family: var(--display); font-weight: 400; font-size: 18px; margin: 0; flex: 1; text-align: center; }
-.sub-head .sp { width: 32px; }
-.back { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; color: var(--muted); }
+.sub-head { position: sticky; top: 0; z-index: 3; display: flex; align-items: center; gap: 8px; padding: 12px; background: var(--paper); border-bottom: 1px solid var(--line); }
+.sub-head h2 { font-family: var(--display); font-weight: 400; font-size: 18px; margin: 0; flex: 1; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sub-head .sp { width: 32px; flex: none; }
+.back { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; color: var(--muted); flex: none; }
 .back:hover { background: var(--cream); }
 .rules { list-style: none; margin: 0; padding: 0; background: var(--paper); border: 1px solid var(--line); border-radius: 16px; }
 .rules li { display: flex; gap: 10px; padding: 11px 14px; font-size: 13.5px; }
 .rules li + li { border-top: 1px solid var(--line); }
 .rules svg { flex: none; margin-top: 2px; color: var(--teal); }
-.prov-row { display: flex; align-items: center; gap: 10px; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; }
+.prov-row { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; }
+button.prov-row:hover { border-color: #CFCCC0; }
 .prov-row > div { flex: 1; min-width: 0; }
 .prov-row b { display: block; font-size: 14px; }
-.prov-row span { font-size: 12.5px; color: var(--muted); }
+.prov-row span.s { display: block; font-size: 12.5px; color: var(--muted); }
+.prov-row .chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.prov-row .chev { color: var(--faint); flex: none; }
 .prov-row.blocked { background: transparent; border-style: dashed; }
 .prov-row.blocked b { color: var(--muted); }
-.prov-row.blocked > div span { color: var(--red); }
+.prov-row.blocked span.s { color: var(--red); }
+
+/* provider profile */
+.prof-hero { background: var(--paper); padding: 18px 16px 16px; border-bottom: 1px solid var(--line); }
+.prof-type { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12px; color: var(--muted); }
+.prof-hero h2 { font-family: var(--display); font-weight: 400; font-size: 26px; line-height: 1.12; margin: 8px 0 6px; text-wrap: balance; }
+.prof-hero p { margin: 0; font-size: 13.5px; color: var(--muted); }
+.prof-facts { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; font-size: 12.5px; color: var(--navy-mid); }
+.prof-facts span { display: inline-flex; align-items: center; gap: 5px; }
+.fundcard { border-radius: 18px; padding: 16px; color: #fff; background: radial-gradient(120% 140% at 100% 0%, #1F6F67 0%, #162B4D 50%, #0D1B35 100%); position: relative; overflow: hidden; }
+.fundcard svg.mtn { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 40%; opacity: 0.08; pointer-events: none; }
+.fc-label { font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.65); position: relative; }
+.fc-total { font-family: var(--display); font-size: 36px; line-height: 1.05; margin-top: 2px; position: relative; }
+.fc-sub { font-size: 12.5px; color: rgba(255,255,255,0.7); position: relative; }
+.fc-lines { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; position: relative; }
+.fc-line { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: baseline; }
+.fc-line b { font-size: 14px; }
+.fc-line .amt { font-weight: 700; font-size: 15px; }
+.fc-line small { grid-column: 1 / -1; font-size: 12px; color: rgba(255,255,255,0.65); }
+.fc-line .bar { grid-column: 1 / -1; background: rgba(255,255,255,0.14); margin-top: 4px; }
+.fc-line.off { opacity: 0.6; }
+.fc-line.off b { text-decoration: line-through; }
+.fc-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.fc-note { margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.14); font-size: 12.5px; color: rgba(255,255,255,0.75); position: relative; display: flex; gap: 8px; }
+.fc-note svg { flex: none; margin-top: 2px; }
+
+.item { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 14px; }
+.item-top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+.item-top b { font-size: 15px; display: block; }
+.item-top span.s { font-size: 12.5px; color: var(--muted); display: block; }
+.item-price { font-family: var(--display); font-size: 22px; line-height: 1; white-space: nowrap; }
+.item-price small { font-family: var(--body); font-size: 11.5px; color: var(--muted); display: block; text-align: right; margin-top: 3px; }
+.cover { margin-top: 12px; border-radius: 12px; padding: 10px 12px; font-size: 13px; display: flex; flex-direction: column; gap: 4px; }
+.cover.myspark { background: var(--teal-soft); }
+.cover.ccap { background: var(--amber-soft); }
+.cover.sgo { background: var(--plum-soft); }
+.cover .row { display: flex; justify-content: space-between; gap: 8px; }
+.cover .row b { white-space: nowrap; }
+.cover .due { color: var(--red); font-weight: 600; }
+.item-acts { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; }
+.item-acts .tag-reg { font-size: 12px; font-weight: 600; color: var(--teal); display: inline-flex; align-items: center; gap: 4px; }
 
 /* bottom nav */
 .nav { display: grid; grid-template-columns: repeat(5, 1fr); background: var(--paper); border-top: 1px solid var(--line); padding: 4px 0 10px; flex: none; }
@@ -174,6 +224,11 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, .opt:focus-wi
 .nav .feat { margin-top: -18px; }
 .nav .feat i { width: 48px; height: 48px; border-radius: 50%; background: var(--amber); color: var(--navy); display: grid; place-items: center; box-shadow: 0 4px 16px rgba(245,166,35,0.45); border: 3px solid var(--paper); }
 .nav .on { color: var(--teal); font-weight: 700; }
+
+/* filter chips */
+.filters { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.filters button { flex: none; font-size: 13px; font-weight: 600; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--muted); }
+.filters button[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: #fff; }
 
 /* sheets */
 .backdrop { position: absolute; inset: 0; background: rgba(13,27,53,0.45); z-index: 20; animation: fade 160ms ease-out; }
@@ -190,7 +245,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, .opt:focus-wi
 .hint { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
 @keyframes up { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .sheet, .backdrop, .flash { animation: none !important; } .bar i { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .sheet, .backdrop, .toast { animation: none !important; } .bar i { transition: none; } }
 
 .opt { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: var(--paper); border: 1.5px solid var(--line); border-radius: 14px; padding: 12px; }
 .opt:hover:not([disabled]) { border-color: #C9C6B9; }
@@ -214,9 +269,9 @@ textarea.field { resize: none; min-height: 72px; }
 .amt-wrap { display: flex; align-items: center; background: var(--paper); border: 1.5px solid var(--line); border-radius: 14px; padding: 6px 14px; }
 .amt-wrap span { font-family: var(--display); font-size: 30px; color: var(--muted); }
 .amt-wrap input { border: 0; outline: 0; font-family: var(--display); font-size: 34px; width: 100%; background: transparent; padding: 4px; }
-.after { display: flex; justify-content: space-between; font-size: 13px; margin-top: 8px; color: var(--muted); }
+.after { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; margin-top: 8px; color: var(--muted); }
 .after b { color: var(--navy); }
-.after.bad b, .after.bad { color: var(--red); }
+.after.bad, .after.bad b { color: var(--red); }
 .badge { font-size: 10.5px; font-weight: 700; letter-spacing: 0.03em; padding: 2px 7px; border-radius: 6px; background: var(--teal-soft); color: var(--teal); margin-left: 6px; vertical-align: 1px; }
 .badge.amber { background: var(--amber-soft); color: var(--amber-ink); }
 .badge.gray { background: var(--cream); color: var(--muted); }
@@ -242,50 +297,46 @@ textarea.field { resize: none; min-height: 72px; }
 .vcard .nm { font-family: var(--mono); letter-spacing: 0.14em; font-size: 15px; position: relative; }
 .vcard .who { font-size: 12px; opacity: 0.75; position: relative; }
 
+/* temporary card */
+.tcard { width: 100%; text-align: left; border: 0; cursor: pointer; gap: 8px; }
+.tcard[disabled] { cursor: default; }
+.tcard.used { filter: grayscale(0.7); opacity: 0.75; }
+.tc-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; background: rgba(255,255,255,0.14); position: relative; }
+.tc-num { font-size: 19px; letter-spacing: 0.1em; position: relative; }
+.tc-row { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 18px; position: relative; }
+.tc-row small { display: block; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.6; }
+.tc-row b { font-size: 14px; }
+.tc-hint { font-size: 11.5px; opacity: 0.7; position: relative; }
+.copyrow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: -6px; }
+.copyrow .hint { margin: 0; }
+.demo-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.demo-row .btn { white-space: nowrap; }
+.tc-tag { white-space: nowrap; }
+.quick { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.chipbtn { font-size: 12.5px; font-weight: 600; padding: 6px 11px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--paper); color: var(--navy-mid); }
+.chipbtn[aria-pressed="true"] { border-color: var(--teal); background: var(--teal-soft); color: var(--teal); }
+
 .toast { position: absolute; left: 16px; right: 16px; bottom: 84px; z-index: 40; background: var(--navy); color: #fff; padding: 10px 14px; border-radius: 12px; font-size: 13.5px; text-align: center; animation: up 200ms ease-out; }
 
-/* ---------- Provider panel ---------- */
-.panel { background: var(--paper); border-radius: 20px; border: 1px solid var(--line); overflow: hidden; }
-.panel-h { padding: 18px 20px 14px; border-bottom: 1px solid var(--line); background: #FAFAF7; }
-.panel-h h2 { font-family: var(--display); font-weight: 400; font-size: 24px; margin: 4px 0 4px; }
-.panel-h p { margin: 0; color: var(--muted); font-size: 13.5px; max-width: 62ch; }
-.pv-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
-.pv-tabs button { font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--muted); }
-.pv-tabs button[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: #fff; }
-.pv-sum { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); border-bottom: 1px solid var(--line); }
-.pv-sum div { padding: 14px 20px; }
-.pv-sum div + div { border-left: 1px solid var(--line); }
-.pv-sum b { display: block; font-family: var(--display); font-weight: 400; font-size: 26px; line-height: 1.1; }
-.pv-sum span { font-size: 12px; color: var(--muted); }
-@media (max-width: 560px) { .pv-sum { grid-template-columns: 1fr; } .pv-sum div + div { border-left: 0; border-top: 1px solid var(--line); } .pv-sum div { padding: 10px 16px; } }
-.pv-body { padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 16px; }
-.pv-body h3 { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); margin: 0 0 8px; font-weight: 700; }
-.tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
-table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 13px; }
-th { text-align: left; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); font-weight: 700; padding: 9px 12px; background: #FAFAF7; border-bottom: 1px solid var(--line); white-space: nowrap; }
-td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
-tr:last-child td { border-bottom: 0; }
-td.amt { text-align: right; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
-th.amt { text-align: right; }
-td .sub { display: block; color: var(--faint); font-size: 12px; }
-td.note { color: var(--muted); max-width: 200px; overflow-wrap: anywhere; }
-.pill { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 700; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
-.pill.ok { background: var(--teal-soft); color: var(--teal); }
-.pill.rev { background: #EEF0F6; color: var(--navy-mid); }
-.pill.need { background: var(--red-soft); color: var(--red); }
-.pill.wait { background: var(--amber-soft); color: var(--amber-ink); }
-tr.flash td { animation: flash 2.4s ease-out; }
-@keyframes flash { 0%, 30% { background: #FFF4D6; } 100% { background: transparent; } }
-.empty { padding: 18px; text-align: center; color: var(--faint); font-size: 13.5px; }
-.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 12.5px; color: var(--muted); }
-.legend span { display: inline-flex; gap: 6px; align-items: center; }
-
-/* ---------- Notes ---------- */
-.notes { padding-block: 8px 48px; }
-.notes > h2 { font-family: var(--display); font-weight: 400; font-size: 26px; margin: 0 0 14px; }
-.ncols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-@media (max-width: 900px) { .ncols { grid-template-columns: minmax(0, 1fr); } }
-.ncol { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; }
+/* ---------- Right column ---------- */
+.side { display: flex; flex-direction: column; gap: 16px; }
+.panel { background: var(--paper); border-radius: 20px; border: 1px solid var(--line); padding: 18px 20px; }
+.panel h2 { font-family: var(--display); font-weight: 400; font-size: 22px; margin: 4px 0 6px; }
+.panel > p { margin: 0 0 14px; color: var(--muted); font-size: 13.5px; max-width: 64ch; }
+.jumps { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+.jump { display: flex; gap: 10px; align-items: flex-start; text-align: left; padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--paper); }
+.jump:hover { border-color: #C9C6B9; background: #FBFBF8; }
+.jump[aria-current="true"] { border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-soft); }
+.jump b { display: block; font-size: 14px; }
+.jump span.s { display: block; font-size: 12.5px; color: var(--muted); margin-top: 1px; }
+.streams { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 640px) { .streams { grid-template-columns: minmax(0, 1fr); } }
+.stream { border-radius: 14px; padding: 12px 14px; }
+.stream.ccap { background: var(--amber-soft); }
+.stream.myspark { background: var(--teal-soft); }
+.stream.sgo { background: var(--plum-soft); }
+.stream b { display: block; font-size: 15px; }
+.stream span { display: block; font-size: 12.5px; color: var(--navy-mid); margin-top: 4px; }
 .ncol h3 { margin: 0 0 10px; font-size: 15px; }
 .ncol ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
 .ncol li { font-size: 13.5px; color: var(--navy-mid); }
@@ -293,63 +344,62 @@ tr.flash td { animation: flash 2.4s ease-out; }
 .tag { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 6px; border-radius: 5px; margin-right: 6px; vertical-align: 1px; }
 .tag.in { background: var(--teal-soft); color: var(--teal); }
 .tag.tbd { background: var(--amber-soft); color: var(--amber-ink); }
+.ncols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 760px) { .ncols { grid-template-columns: minmax(0, 1fr); } }
 </style>
 
 <header class="top wrap">
   <div class="top-row">
     <div>
-      <div class="eyebrow">My Denver Youth · Wallet concept · Shared for feedback</div>
+      <div class="eyebrow">My Denver Youth · Concept v4 · For internal alignment</div>
       <h1>MY Denver Card <span>Wallet</span></h1>
-      <p>One wallet for out-of-school funds and the childcare subsidy. Families can direct a payment to an approved provider and attach who it's for and what it covers, so the provider can match it to a sign-up without a phone call. Click through the phone; the provider's ledger on the right updates as you go.</p>
+      <p>One card holds three funding streams: CCAP for childcare, MySpark for out-of-school activities, and SGO scholarship funds for education costs. Open any provider to see what your card covers there. For activities, get a one-time card number and register on the provider's own site. For childcare, send the provider a payment with a note saying exactly what it covers.</p>
     </div>
     <button class="reset" data-act="reset">Reset demo</button>
   </div>
-  <div class="tabs" role="tablist" id="tabs">
-    <button role="tab" data-act="tab" data-id="family" aria-selected="true">Family app</button>
-    <button role="tab" data-act="tab" data-id="provider" aria-selected="false">What the provider sees</button>
-  </div>
 </header>
 
-<main class="stage wrap" id="stage" data-tab="family">
+<main class="stage wrap">
   <div class="col-phone"><div class="phone" id="phone"></div></div>
-  <div class="col-provider" id="provider"></div>
-</main>
-
-<section class="notes wrap">
-  <h2>For discussion</h2>
-  <div class="ncols">
-    <div class="ncol">
-      <h3>What this version adds</h3>
-      <ul>
-        <li><b>Wallet is the center of the app.</b> It's the middle nav button and shows one total across funding pockets.</li>
-        <li><b>Two pockets with their own rules.</b> Out-of-school funds (My Spark) and the childcare subsidy (CCCAP) each limit which kids and which approved providers they can pay.</li>
-        <li><b>Pay a provider from the app.</b> Pick the pocket and an approved provider, then say which child and which sign-up or care period the payment covers. The balance drops right away.</li>
-        <li><b>The card still works at the counter.</b> It's restricted to approved providers, and each swipe asks the family to add details afterward.</li>
-      </ul>
+  <div class="side">
+    <div class="panel">
+      <div class="eyebrow">Try it</div>
+      <h2>Jump to a screen</h2>
+      <p>Each provider has its own profile. It shows which funding streams work there, what's left, and what that covers for each program or care period.</p>
+      <div class="jumps" id="jumps"></div>
     </div>
-    <div class="ncol">
-      <h3>Making reconciliation easier</h3>
-      <ul>
-        <li><span class="tag in">In prototype</span><b>Structured payment details, not just a memo.</b> Each payment carries the child, the enrollment ID or care period, and the provider's account number. A free-text note is optional.</li>
-        <li><span class="tag in">In prototype</span><b>A reference code on every payment</b>, shown to both the family and the provider.</li>
-        <li><span class="tag in">In prototype</span><b>Provider payment requests.</b> The provider sends a request tied to an enrollment or invoice, and the family approves it. This is the closest we get to joining registration and payment without building registration for every provider.</li>
-        <li><span class="tag in">In prototype</span><b>Add details after a card swipe</b>, so tap-to-pay purchases don't end up as unmatched deposits.</li>
-        <li><span class="tag tbd">To discuss</span><b>Pay at checkout</b> when registering in the app. This reuses the existing funding waterfall, so the payment is never separate from the sign-up.</li>
-        <li><span class="tag tbd">To discuss</span><b>A provider export or integration</b>: a downloadable statement first, then a feed into the registration and billing tools providers already use.</li>
-      </ul>
+    <div class="panel">
+      <div class="eyebrow">Three funding streams</div>
+      <h2>What's on the card</h2>
+      <div class="streams">
+        <div class="stream ccap"><b>CCAP</b><span>Childcare subsidy. Monthly authorization for licensed childcare providers.</span></div>
+        <div class="stream myspark"><b>MySpark</b><span>Out-of-school dollars for approved after-school, summer and enrichment programs.</span></div>
+        <div class="stream sgo"><b>SGO funds</b><span>Scholarship dollars for education costs such as tuition, tutoring and school fees.</span></div>
+      </div>
     </div>
-    <div class="ncol">
-      <h3>Questions to settle</h3>
-      <ul>
-        <li><b>How does CCCAP actually move?</b> Today the subsidy pays providers directly based on attendance. Would a wallet sit alongside that or replace it? This needs early input from the state and county administrators.</li>
-        <li><b>Who approves providers</b> for each pocket, and how often does that list sync?</li>
-        <li><b>How much child information should providers see?</b> The prototype shows first name and last initial.</li>
-        <li><b>Parent fees and overages:</b> how does the family pay what the pocket doesn't cover?</li>
-        <li><b>Timing of provider requests:</b> what happens to a request the family never approves, and how do refunds return to a pocket?</li>
-      </ul>
+    <div class="panel ncols">
+      <div class="ncol">
+        <h3>What changed in v4</h3>
+        <ul>
+          <li><b>Temporary cards for activities and education.</b> "Pay with card" on a program creates a one-time card number locked to that provider and amount. Tap the card to show the number, then open the provider's registration page and pay at checkout.</li>
+          <li><b>Lump-sum payments for childcare.</b> "Send a payment" goes straight to the childcare provider from CCAP. The family picks what it's for and writes exactly what it covers.</li>
+          <li><b>Funds are held when a card is created</b> and returned if the card is canceled. Use the demo button to see the provider charge the card.</li>
+          <li><b>Still from v3:</b> three funding streams with CCAP shown first, and a profile for every provider.</li>
+        </ul>
+      </div>
+      <div class="ncol">
+        <h3>Still to settle</h3>
+        <ul>
+          <li><span class="tag tbd">To discuss</span><b>How CCAP moves today.</b> The subsidy pays providers directly based on attendance. Would the wallet sit alongside that or replace it?</li>
+          <li><span class="tag tbd">To discuss</span><b>Which SGO expenses qualify</b> and who certifies the providers.</li>
+          <li><span class="tag tbd">To discuss</span><b>Stacking.</b> When a provider accepts two streams, should the app pick the order or should the family choose? The prototype lets the family choose.</li>
+          <li><span class="tag tbd">To discuss</span><b>Paying the rest.</b> When a program costs more than the balance, the family pays the difference at checkout. Do providers' checkouts support splitting a payment across two cards?</li>
+          <li><span class="tag tbd">To discuss</span><b>Temporary card rules.</b> How long should a card stay open, and can it be used for more than one charge (for example, a deposit and then a balance)?</li>
+        </ul>
+      </div>
     </div>
   </div>
-</section>
+</main>
 
 <script>
 (function () {
@@ -369,11 +419,15 @@ tr.flash td { animation: flash 2.4s ease-out; }
     card: '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',
     sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
     heart: '<path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/>',
+    book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/>',
     plus: '<path d="M12 5v14M5 12h14"/>',
-    alert: '<circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>',
     inbox: '<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
     lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
-    tap: '<path d="M2 12a10 10 0 0 1 10-10M6 12a6 6 0 0 1 6-6M10 12a2 2 0 0 1 2-2"/>'
+    tap: '<path d="M2 12a10 10 0 0 1 10-10M6 12a6 6 0 0 1 6-6M10 12a2 2 0 0 1 2-2"/>',
+    pin: '<path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    link: '<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>',
+    ext: '<path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>'
   };
   const ic = (n, s = 18) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -386,28 +440,40 @@ tr.flash td { animation: flash 2.4s ease-out; }
     diego: { name: 'Diego', age: 7 },
     lucia: { name: 'Lucía', age: 3 }
   };
+  const ORDER = ['ccap', 'myspark', 'sgo'];
   const POCKETS = {
-    ost: {
-      name: 'Out-of-School', source: 'My Spark', icon: 'sun', kids: ['sofia', 'diego'], max: 1000,
-      foot: 'Approved activity providers · through Aug 31, 2027',
-      rules: [
-        'For Sofia and Diego',
-        'After-school, summer and enrichment providers approved by My Spark',
-        'Pay in the app, approve a provider’s request, or tap the card at the provider',
-        'Unused funds stay available through Aug 31, 2027'
-      ]
-    },
-    cc: {
-      name: 'Childcare', source: 'CCCAP subsidy', icon: 'heart', kids: ['lucia'], max: 1180,
+    ccap: {
+      name: 'CCAP', long: 'CCAP childcare subsidy', icon: 'heart', color: '#F5A623', kids: ['lucia'], max: 1180,
       foot: 'October authorization · next one loads Nov 1',
       rules: [
         'For Lucía',
-        'Licensed childcare providers approved for CCCAP',
+        'Licensed childcare providers approved for CCAP',
         'A new monthly authorization loads on the 1st',
         'Your monthly parent fee is paid to the provider separately'
       ]
+    },
+    myspark: {
+      name: 'MySpark', long: 'MySpark out-of-school funds', icon: 'sun', color: '#3FB3A3', kids: ['sofia', 'diego'], max: 1000,
+      foot: 'Through Aug 31, 2027',
+      rules: [
+        'For Sofia and Diego',
+        'After-school, summer and enrichment programs approved by MySpark',
+        'Apply it from a provider’s page, approve a provider’s request, or tap the card',
+        'Unused funds stay available through Aug 31, 2027'
+      ]
+    },
+    sgo: {
+      name: 'SGO funds', long: 'SGO scholarship funds', icon: 'book', color: '#A497D6', kids: ['sofia', 'diego'], max: 2000,
+      foot: '2026–27 school year',
+      rules: [
+        'For Sofia and Diego',
+        'Education costs: tuition, tutoring and school fees',
+        'Only providers approved by the scholarship organization',
+        'Funds are for the 2026–27 school year'
+      ]
     }
   };
+  const TYPES = { activity: 'Activity', childcare: 'Childcare', education: 'Education' };
   const PERIODS = [
     { id: 'p1', label: 'Oct 27 – Oct 31', weeks: 1 },
     { id: 'p2', label: 'Nov 3 – Nov 14', weeks: 2 },
@@ -415,53 +481,70 @@ tr.flash td { animation: flash 2.4s ease-out; }
   ];
   function freshProviders() {
     return [
-      { id: 'dsa', name: 'Denver STEM Alliance', short: 'STEM Alliance', pocket: 'ost', sub: 'Robotics and coding', sessions: [
-        { id: 'DSA-2291', name: 'Robotics Club', term: 'Winter 2027', dates: 'Jan 5 – Mar 11', price: 180, kid: 'sofia' },
-        { id: 'DSA-2310', name: 'Code Explorers', term: 'Winter 2027', dates: 'Jan 7 – Mar 4', price: 150 }
-      ] },
-      { id: 'dpr', name: 'Denver Parks & Recreation', short: 'Parks & Rec', pocket: 'ost', sub: 'Sports and swim', sessions: [
-        { id: 'DPR-88530', name: 'Swim Lessons, Level 2', term: 'Late fall 2026', dates: 'Nov 3 – Dec 12', price: 40, kid: 'diego' },
-        { id: 'DPR-88412', name: 'Soccer Stars', term: 'Spring 2027', dates: 'Mar 2 – May 14', price: 100 }
-      ] },
-      { id: 'cprd', name: 'Cleo Parker Robinson Dance', short: 'Cleo Parker Robinson', pocket: 'ost', sub: 'Dance', sessions: [
-        { id: 'CPR-1207', name: 'Creative Dance', term: 'Winter 2027', dates: 'Jan 10 – Mar 21', price: 120 }
-      ] },
-      { id: 'mhtp', name: 'Mile High Test Prep', pocket: 'ost', blocked: 'Not an approved My Spark provider' },
-      { id: 'ls', name: 'Little Sprouts Early Learning', short: 'Little Sprouts', pocket: 'cc', sub: 'Licensed center · Sunnyside', weekly: 295, acct: 'LS-0193' },
-      { id: 'rosa', name: 'Rosa’s Family Child Care', short: 'Rosa’s', pocket: 'cc', sub: 'Licensed home · Westwood', weekly: 240, acct: '' },
-      { id: 'sunrise', name: 'Sunrise Drop-In Play', pocket: 'cc', blocked: 'Not a licensed childcare provider' }
+      { id: 'ls', name: 'Little Sprouts Early Learning', short: 'Little Sprouts', type: 'childcare', pockets: ['ccap'], hood: 'Sunnyside', hours: 'Mon–Fri, 7am–6pm',
+        desc: 'Licensed childcare center for ages 6 weeks to 5 years. Infant, toddler and preschool rooms.', weekly: 295, acct: 'LS-0193' },
+      { id: 'rosa', name: 'Rosa’s Family Child Care', short: 'Rosa’s', type: 'childcare', pockets: ['ccap'], hood: 'Westwood', hours: 'Mon–Fri, 6:30am–5:30pm',
+        desc: 'Licensed family child care home with up to six children. Spanish and English.', weekly: 240, acct: '' },
+      { id: 'sunrise', name: 'Sunrise Drop-In Play', short: 'Sunrise', type: 'childcare', pockets: [], hood: 'Baker', hours: 'Daily, 9am–4pm',
+        desc: 'Hourly drop-in play space for young children.', notFor: { ccap: 'Not a licensed childcare provider' } },
+      { id: 'dsa', name: 'Denver STEM Alliance', short: 'STEM Alliance', type: 'activity', pockets: ['myspark', 'sgo'], hood: 'Five Points', hours: 'After school, Tue–Thu',
+        desc: 'Hands-on robotics and coding programs for ages 9 to 14.', sessions: [
+          { id: 'DSA-2291', name: 'Robotics Club', term: 'Winter 2027', dates: 'Jan 5 – Mar 11', price: 180, kid: 'sofia' },
+          { id: 'DSA-2310', name: 'Code Explorers', term: 'Winter 2027', dates: 'Jan 7 – Mar 4', price: 150 }
+        ] },
+      { id: 'dpr', name: 'Denver Parks & Recreation', short: 'Parks & Rec', type: 'activity', pockets: ['myspark'], hood: 'Citywide', hours: 'Rec centers across Denver',
+        desc: 'Youth sports, swim lessons and camps at city recreation centers.', sessions: [
+          { id: 'DPR-88530', name: 'Swim Lessons, Level 2', term: 'Late fall 2026', dates: 'Nov 3 – Dec 12', price: 40, kid: 'diego' },
+          { id: 'DPR-88412', name: 'Soccer Stars', term: 'Spring 2027', dates: 'Mar 2 – May 14', price: 100 }
+        ] },
+      { id: 'cprd', name: 'Cleo Parker Robinson Dance', short: 'Cleo Parker Robinson', type: 'activity', pockets: ['myspark'], hood: 'Five Points', hours: 'Weekends',
+        desc: 'Youth dance classes from creative movement to modern and jazz.', sessions: [
+          { id: 'CPR-1207', name: 'Creative Dance', term: 'Winter 2027', dates: 'Jan 10 – Mar 21', price: 120 }
+        ] },
+      { id: 'mhtp', name: 'Mile High Test Prep', short: 'Mile High Test Prep', type: 'education', pockets: ['sgo'], hood: 'Capitol Hill', hours: 'Weekday evenings',
+        desc: 'Small-group and one-on-one tutoring in math and reading.', notFor: { myspark: 'Tutoring isn’t a MySpark activity' }, sessions: [
+          { id: 'MHT-0412', name: 'Math tutoring, weekly', term: 'Winter block', dates: 'Jan 6 – Mar 10', price: 500, kid: 'sofia' },
+          { id: 'MHT-0419', name: 'Reading support', term: 'Winter block', dates: 'Jan 8 – Mar 12', price: 420 }
+        ] },
+      { id: 'nacad', name: 'Northside Academy', short: 'Northside Academy', type: 'education', pockets: ['sgo'], hood: 'Sunnyside', hours: 'K–8 school',
+        desc: 'Independent K–8 school. Tuition can be paid in installments.', notFor: { myspark: 'School tuition isn’t a MySpark activity' }, sessions: [
+          { id: 'NSA-T27S', name: 'Spring tuition installment', term: 'Spring 2027', dates: 'Jan – May', price: 1800, kid: 'diego' },
+          { id: 'NSA-F27S', name: 'Spring activity fee', term: 'Spring 2027', dates: 'Jan – May', price: 150 }
+        ] }
     ];
   }
   function freshState() {
     return {
-      bal: { ost: 710, cc: 590 },
+      bal: { ccap: 590, myspark: 710, sgo: 1500 },
       providers: freshProviders(),
       txns: [
-        { id: 't5', date: 'Oct 20', kind: 'pay', method: 'card', pocket: 'ost', prov: 'dpr', kid: null, forLabel: null, ref: 'MDC-8HW2', enroll: null, note: '', amount: 40, status: 'need' },
-        { id: 't4', date: 'Oct 14', kind: 'pay', method: 'request', pocket: 'cc', prov: 'ls', kid: 'lucia', forLabel: 'Tuition · Oct 13 – Oct 24', ref: 'MDC-3RTP', enroll: 'Invoice LS-1031', note: '', amount: 590, status: 'ok' },
-        { id: 't3', date: 'Oct 1', kind: 'load', pocket: 'cc', title: 'October childcare authorization', amount: 1180 },
-        { id: 't2', date: 'Sep 30', kind: 'pay', method: 'app', pocket: 'ost', prov: 'dsa', kid: 'sofia', forLabel: 'Code Explorers · Fall 2026', ref: 'MDC-4QJ2', enroll: 'Enrollment DSA-2187', note: 'Sofia will miss Oct 9 for a school field trip.', amount: 150, status: 'ok' },
-        { id: 't1', date: 'Sep 12', kind: 'pay', method: 'app', pocket: 'ost', prov: 'dpr', kid: 'diego', forLabel: 'Soccer Stars · Fall 2026', ref: 'MDC-9KD1', enroll: 'Enrollment DPR-87120', note: 'Tue/Thu group with Coach Ana, please.', amount: 100, status: 'ok' },
-        { id: 't0', date: 'Sep 1', kind: 'load', pocket: 'ost', title: 'My Spark 2026–27 funds added', amount: 1000 }
+        { id: 't6', date: 'Oct 20', kind: 'pay', method: 'card', pocket: 'myspark', prov: 'dpr', kid: null, forLabel: null, ref: 'MDC-8HW2', enroll: null, note: '', amount: 40, status: 'need' },
+        { id: 't5', date: 'Oct 14', kind: 'pay', method: 'request', pocket: 'ccap', prov: 'ls', kid: 'lucia', forLabel: 'Tuition · Oct 13 – Oct 24', ref: 'MDC-3RTP', enroll: 'Invoice LS-1031', note: '', amount: 590, status: 'ok' },
+        { id: 't4', date: 'Oct 1', kind: 'load', pocket: 'ccap', title: 'October CCAP authorization', amount: 1180 },
+        { id: 't3', date: 'Sep 30', kind: 'pay', method: 'app', pocket: 'myspark', prov: 'dsa', kid: 'sofia', forLabel: 'Code Explorers · Fall 2026', ref: 'MDC-4QJ2', enroll: 'Enrollment DSA-2187', note: 'Sofia will miss Oct 9 for a school field trip.', amount: 150, status: 'ok' },
+        { id: 't2', date: 'Sep 12', kind: 'pay', method: 'app', pocket: 'myspark', prov: 'dpr', kid: 'diego', forLabel: 'Soccer Stars · Fall 2026', ref: 'MDC-9KD1', enroll: 'Enrollment DPR-87120', note: 'Tue/Thu group with Coach Ana, please.', amount: 100, status: 'ok' },
+        { id: 't1', date: 'Sep 8', kind: 'pay', method: 'app', pocket: 'sgo', prov: 'mhtp', kid: 'sofia', forLabel: 'Math tutoring, weekly · Fall block', ref: 'MDC-2LMX', enroll: 'Enrollment MHT-0388', note: '', amount: 500, status: 'ok' },
+        { id: 't0b', date: 'Sep 1', kind: 'load', pocket: 'myspark', title: 'MySpark 2026–27 funds added', amount: 1000 },
+        { id: 't0', date: 'Aug 15', kind: 'load', pocket: 'sgo', title: 'SGO scholarship funds added', amount: 2000 }
       ],
       requests: [
-        { id: 'r1', prov: 'ls', pocket: 'cc', kid: 'lucia', forLabel: 'Tuition · Oct 27 – Oct 31', ref: 'Invoice LS-1042', amount: 295, sent: 'Oct 24' },
-        { id: 'r2', prov: 'dsa', pocket: 'ost', kid: 'sofia', forLabel: 'Robotics Club · Winter 2027', ref: 'Enrollment DSA-2291', session: 'DSA-2291', amount: 180, sent: 'Oct 22' }
+        { id: 'r1', prov: 'ls', pocket: 'ccap', kid: 'lucia', forLabel: 'Tuition · Oct 27 – Oct 31', ref: 'Invoice LS-1042', amount: 295, sent: 'Oct 24' },
+        { id: 'r2', prov: 'dsa', pocket: 'myspark', kid: 'sofia', forLabel: 'Robotics Club · Winter 2027', ref: 'Enrollment DSA-2291', session: 'DSA-2291', amount: 180, sent: 'Oct 22' }
       ],
       screen: 'wallet',
+      prev: [],
+      filter: 'all',
       sheet: null,
       flow: null,
       details: null,
-      provView: 'dsa',
-      tab: 'family',
-      flash: null,
       toast: null
     };
   }
   let S = freshState();
   const prov = (id) => S.providers.find((p) => p.id === id);
   const kidShort = (k) => (k ? KIDS[k].name + ' ' + FAMILY[0] + '.' : '');
-  const total = () => S.bal.ost + S.bal.cc;
+  const total = () => ORDER.reduce((a, k) => a + S.bal[k], 0);
+  const kidList = (k) => POCKETS[k].kids.map((x) => KIDS[x].name).join(' & ');
   let seq = 0;
   function newRef() {
     const a = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -469,46 +552,59 @@ tr.flash td { animation: flash 2.4s ease-out; }
     for (let i = 0; i < 4; i++) r += a[Math.floor(Math.random() * a.length)];
     return r;
   }
+  // The stream a provider's item defaults to: the first accepted one that covers it in full, else the largest balance.
+  function bestPocket(p, price) {
+    const ok = p.pockets.filter((k) => S.bal[k] >= price);
+    if (ok.length) return ok[0];
+    return p.pockets.slice().sort((a, b) => S.bal[b] - S.bal[a])[0];
+  }
 
   // ---------- Phone: shared pieces ----------
   function navHTML() {
-    const items = [['home', 'Home'], ['compass', 'Explore'], ['wallet', 'Wallet'], ['cal', 'Calendar'], ['user', 'Profile']];
-    return `<nav class="nav">${items.map(([i, l]) => i === 'wallet'
-      ? `<button class="feat on" data-act="home" aria-label="Wallet"><i>${ic('wallet', 22)}</i>Wallet</button>`
-      : `<button data-act="soon" data-what="${l}">${ic(i, 20)}${l}</button>`).join('')}</nav>`;
+    const items = [['home', 'Home', 'soon'], ['compass', 'Explore', 'explore'], ['wallet', 'Wallet', 'wallet'], ['cal', 'Calendar', 'soon'], ['user', 'Profile', 'soon']];
+    const cur = S.screen === 'explore' || S.screen.startsWith('prov:') ? 'explore' : 'wallet';
+    return `<nav class="nav">${items.map(([i, l, to]) => i === 'wallet'
+      ? `<button class="feat ${cur === 'wallet' ? 'on' : ''}" data-act="go" data-to="wallet" aria-label="Wallet"><i>${ic('wallet', 22)}</i>Wallet</button>`
+      : to === 'soon' ? `<button data-act="soon" data-what="${l}">${ic(i, 20)}${l}</button>`
+      : `<button class="${cur === to ? 'on' : ''}" data-act="go" data-to="${to}">${ic(i, 20)}${l}</button>`).join('')}</nav>`;
   }
-  function txHTML(t) {
+  function txHTML(t, withProv = true) {
     if (t.kind === 'load') {
       return `<div class="tx"><div class="pk-ic load">${ic('plus', 16)}</div><div class="tx-main">
         <div class="tx-row"><span class="tx-title">${esc(t.title)}</span><span class="tx-amt in num">+${money(t.amount)}</span></div>
         <div class="tx-meta"><span class="chip ${t.pocket}">${POCKETS[t.pocket].name}</span><span>${t.date}</span></div></div></div>`;
     }
     const p = prov(t.prov);
-    const how = t.method === 'card' ? 'Card tap' : t.method === 'request' ? 'Provider request' : 'Paid in app';
+    const how = t.method === 'card' ? 'Card tap' : t.method === 'vcard' ? 'Temporary card •• ' + t.card.last4 : t.method === 'request' ? 'Provider request' : 'Paid in app';
     let st;
-    if (t.status === 'ok') st = `<span class="st ok">${ic('check', 13)}Matched by provider</span>`;
-    else if (t.status === 'rev') st = `<span class="st rev">${ic('inbox', 13)}Sent with details</span>`;
+    if (t.status === 'hold') st = `<span class="st rev">${ic('card', 13)}Held, not charged yet</span><button class="linkbtn" data-act="showvc" data-id="${t.id}">Show card</button>`;
+    else if (t.status === 'ok') st = `<span class="st ok">${ic('check', 13)}Linked to ${esc(t.enroll || 'provider')}</span>`;
+    else if (t.status === 'rev') st = `<span class="st rev">${ic('inbox', 13)}Sent with your description</span>`;
     else st = `<button class="linkbtn" data-act="details" data-id="${t.id}">Add details</button>`;
+    const title = withProv ? `<button class="tx-title" data-act="go" data-to="prov:${p.id}">${esc(p.name)}</button>` : `<span class="tx-title">${t.forLabel ? esc(t.forLabel) : 'Card tap'}</span>`;
     return `<div class="tx"><div class="pk-ic ${t.pocket}">${ic(t.method === 'card' ? 'tap' : POCKETS[t.pocket].icon, 16)}</div><div class="tx-main">
-      <div class="tx-row"><span class="tx-title">${esc(p.name)}</span><span class="tx-amt num">−${money(t.amount)}</span></div>
-      <div class="tx-for">${t.forLabel ? esc(t.forLabel) : '<span style="color:var(--amber-ink)">Who and what is this for?</span>'}</div>
-      <div class="tx-meta">${t.kid ? `<span class="chip kid">${KIDS[t.kid].name}</span>` : ''}<span>${t.date} · ${how}</span><span class="mono">${t.ref}</span></div>
+      <div class="tx-row">${title}<span class="tx-amt num">−${money(t.amount)}</span></div>
+      ${withProv ? `<div class="tx-for">${t.forLabel ? esc(t.forLabel) : '<span style="color:var(--amber-ink)">Who and what is this for?</span>'}</div>` : ''}
+      <div class="tx-meta"><span class="chip ${t.pocket}">${POCKETS[t.pocket].name}</span>${t.kid ? `<span class="chip kid">${KIDS[t.kid].name}</span>` : ''}<span>${t.date} · ${how}</span><span class="mono">${t.ref}</span></div>
       ${t.note ? `<div class="tx-note">“${esc(t.note)}”</div>` : ''}
       <div class="tx-meta">${st}</div></div></div>`;
   }
-  function pocketCard(k) {
+  function pocketCard(k, feature) {
     const pk = POCKETS[k], b = S.bal[k];
-    const kids = pk.kids.map((x) => KIDS[x].name).join(' & ');
-    return `<button class="pocket" data-act="pocket" data-id="${k}">
-      <div class="pk-top"><span class="pk-ic ${k}">${ic(pk.icon, 17)}</span><div><div class="pk-name">${pk.name}</div><div class="pk-src">${pk.source} · ${kids}</div></div><span class="chev">${ic('chev', 18)}</span></div>
-      <div class="pk-bal num">${money(b)} <small>left of ${money(pk.max)}</small></div>
+    return `<button class="pocket ${feature ? 'feature' : ''}" data-act="go" data-to="pocket:${k}">
+      <div class="pk-top"><span class="pk-ic ${k}">${ic(pk.icon, 17)}</span><div><div class="pk-name">${pk.name}</div><div class="pk-src">${feature ? 'Childcare subsidy · ' : ''}For ${kidList(k)}</div></div>${feature ? `<span class="chev">${ic('chev', 18)}</span>` : ''}</div>
+      <div class="pk-bal num">${money(b)} <small>${feature ? 'left of ' + money(pk.max) : 'of ' + money(pk.max)}</small></div>
       <div class="bar ${k}"><i style="width:${Math.max(0, (b / pk.max) * 100)}%"></i></div>
       <div class="pk-foot">${pk.foot}</div></button>`;
   }
-
-  function blockedRow(p) {
-    return `<div class="prov-row blocked"><span class="pk-ic load">${ic('lock', 15)}</span><div><b>${esc(p.name)}</b><span>${esc(p.blocked)}</span></div></div>`;
+  function provRow(p) {
+    return `<button class="prov-row" data-act="go" data-to="prov:${p.id}"><div><b>${esc(p.name)}</b><span class="s">${TYPES[p.type]} · ${esc(p.hood)}</span>
+      <div class="chips">${p.pockets.length ? p.pockets.map((k) => `<span class="chip ${k}">${POCKETS[k].name}</span>`).join('') : '<span class="chip off">No card funds</span>'}</div></div><span class="chev">${ic('chev', 18)}</span></button>`;
   }
+  function blockedRow(p, k) {
+    return `<button class="prov-row blocked" data-act="go" data-to="prov:${p.id}"><span class="pk-ic load">${ic('lock', 15)}</span><div><b>${esc(p.name)}</b><span class="s">${esc(p.notFor[k])}</span></div></button>`;
+  }
+  const head = (title) => `<div class="sub-head"><button class="back" data-act="back" aria-label="Back">${ic('back', 20)}</button><h2>${esc(title)}</h2><span class="sp"></span></div>`;
 
   // ---------- Phone: screens ----------
   function walletScreen() {
@@ -518,157 +614,265 @@ tr.flash td { animation: flash 2.4s ease-out; }
     return `<div class="app-head">
         <div class="ah-row"><div class="logo"><b>MY</b><span>Denver Card</span></div>
           <button class="icon-btn" data-act="soon" data-what="Notifications" aria-label="Notifications">${ic('bell', 16)}${ask ? '<span class="dot"></span>' : ''}</button></div>
-        <div class="ah-label">Available to spend</div>
+        <div class="ah-label">Available on your card</div>
         <div class="ah-total num">${money(total())}</div>
-        <div class="ah-sub">${FAMILY} family · card ending 4821</div>
+        <div class="ah-sub">${FAMILY} family · CCAP, MySpark and SGO funds · card ending 4821</div>
         <div class="ah-actions">
-          <button class="btn amber" data-act="pay">${ic('send', 16)}Pay a provider</button>
+          <button class="btn amber" data-act="go" data-to="explore">${ic('compass', 16)}Find a provider</button>
           <button class="btn glass" data-act="showcard">${ic('card', 16)}Show card</button>
         </div>
         <svg class="ridge" viewBox="0 0 400 22" preserveAspectRatio="none" aria-hidden="true"><polygon points="0,22 0,15 45,18 85,6 125,14 165,2 210,12 255,4 295,11 335,5 370,14 400,9 400,22" fill="#F5F4F0"/></svg>
       </div>
       <div class="body">
+        <section><div class="sec-h"><h2>Your funding</h2><small>Tap a stream to see where it works</small></div>
+          <div class="pockets">${pocketCard('ccap', true)}${pocketCard('myspark')}${pocketCard('sgo')}</div></section>
         ${ask ? `<section><div class="sec-h"><h2>Needs your OK</h2><small>${ask} item${ask > 1 ? 's' : ''}</small></div><div class="stack">
           ${reqs.map((r) => { const p = prov(r.prov); return `<div class="req">
-            <div class="req-top"><span class="pk-ic ${r.pocket}">${ic('inbox', 16)}</span><div><div class="req-who">${esc(p.name)}</div><div class="req-what">Requests payment for ${KIDS[r.kid].name}: ${esc(r.forLabel)}</div></div><div class="req-amt num">${money(r.amount)}</div></div>
+            <div class="req-top"><span class="pk-ic ${r.pocket}">${ic('inbox', 16)}</span><div><button class="req-who tx-title" data-act="go" data-to="prov:${p.id}">${esc(p.name)}</button><div class="req-what">Requests payment for ${KIDS[r.kid].name}: ${esc(r.forLabel)}</div></div><div class="req-amt num">${money(r.amount)}</div></div>
             <div class="req-tags"><span class="chip ${r.pocket}">From ${POCKETS[r.pocket].name}</span><span class="chip">${esc(r.ref)}</span><span class="chip">Sent ${r.sent}</span></div>
             <div class="req-acts"><button class="btn quiet sm" data-act="decline" data-id="${r.id}">Decline</button><button class="btn teal sm" data-act="approve" data-id="${r.id}" ${r.amount > S.bal[r.pocket] ? 'disabled' : ''}>Approve and pay</button></div>
           </div>`; }).join('')}
           ${needs.map((t) => `<div class="req swipe">
-            <div class="req-top"><span class="pk-ic cc">${ic('tap', 16)}</span><div><div class="req-who">Card tap at ${esc(prov(t.prov).name)}</div><div class="req-what">Tell them who and what it was for so they can match the payment.</div></div><div class="req-amt num">${money(t.amount)}</div></div>
+            <div class="req-top"><span class="pk-ic ccap">${ic('tap', 16)}</span><div><div class="req-who">Card tap at ${esc(prov(t.prov).name)}</div><div class="req-what">Tell them who and what it was for so the payment links to the right sign-up.</div></div><div class="req-amt num">${money(t.amount)}</div></div>
             <div class="req-acts"><button class="btn navy sm" data-act="details" data-id="${t.id}">Add details</button></div>
           </div>`).join('')}
         </div></section>` : ''}
-        <section><div class="sec-h"><h2>Your funding</h2></div><div class="stack">${pocketCard('ost')}${pocketCard('cc')}</div></section>
-        <section><div class="sec-h"><h2>Activity</h2></div><div class="tx-list">${S.txns.map(txHTML).join('')}</div></section>
-      </div>`;
-  }
-  function pocketScreen(k) {
-    const pk = POCKETS[k], b = S.bal[k];
-    const provs = S.providers.filter((p) => p.pocket === k && !p.blocked);
-    const txns = S.txns.filter((t) => t.pocket === k);
-    return `<div class="sub-head"><button class="back" data-act="home" aria-label="Back">${ic('back', 20)}</button><h2>${pk.name}</h2><span class="sp"></span></div>
-      <div class="body" style="padding-top:16px">
-        <div class="pocket" style="cursor:default">
-          <div class="pk-top"><span class="pk-ic ${k}">${ic(pk.icon, 17)}</span><div><div class="pk-name">${pk.source}</div><div class="pk-src">${pk.foot}</div></div></div>
-          <div class="pk-bal num">${money(b)} <small>left of ${money(pk.max)}</small></div>
-          <div class="bar ${k}"><i style="width:${(b / pk.max) * 100}%"></i></div>
-          <div class="pk-foot">${money(pk.max - b)} used</div>
-          <button class="btn amber block" style="margin-top:14px" data-act="pay" data-pocket="${k}">${ic('send', 16)}Pay from ${pk.name}</button>
-        </div>
-        <section><div class="sec-h"><h2>How it can be used</h2></div><ul class="rules">${pk.rules.map((r) => `<li>${ic('check', 15)}<span>${r}</span></li>`).join('')}</ul></section>
-        <section><div class="sec-h"><h2>Approved providers</h2><small>${provs.length} near you</small></div><div class="stack">
-          ${provs.map((p) => `<div class="prov-row"><div><b>${esc(p.name)}</b><span>${esc(p.sub)}</span></div><button class="btn line sm" data-act="pay" data-pocket="${k}" data-prov="${p.id}">Pay</button></div>`).join('')}
-        </div></section>
-        <section><div class="sec-h"><h2>Not eligible</h2><small>Payments are declined</small></div><div class="stack">
-          ${S.providers.filter((p) => p.pocket === k && p.blocked).map(blockedRow).join('')}
-        </div></section>
-        <section><div class="sec-h"><h2>Activity</h2></div><div class="tx-list">${txns.map(txHTML).join('')}</div></section>
+        <section><div class="sec-h"><h2>Activity</h2></div><div class="tx-list">${S.txns.map((t) => txHTML(t)).join('')}</div></section>
       </div>`;
   }
 
-  // ---------- Pay flow ----------
-  function flowOK(f) {
-    if (f.step === 1) return !!f.pocket;
-    if (f.step === 2) return !!f.prov;
-    if (f.step === 3) {
-      if (!f.kid) return false;
-      if (f.pocket === 'ost') return f.session === 'other' ? f.other.trim().length > 2 : !!f.session;
-      return !!f.period;
-    }
-    if (f.step === 4) return f.amount > 0 && f.amount <= S.bal[f.pocket];
-    return true;
+  function pocketScreen(k) {
+    const pk = POCKETS[k], b = S.bal[k];
+    const provs = S.providers.filter((p) => p.pockets.includes(k));
+    const blocked = S.providers.filter((p) => p.notFor && p.notFor[k]);
+    const txns = S.txns.filter((t) => t.pocket === k);
+    return `${head(pk.name)}
+      <div class="body" style="padding-top:16px">
+        <div class="pocket ${k === 'ccap' ? 'feature' : ''}" style="cursor:default">
+          <div class="pk-top"><span class="pk-ic ${k}">${ic(pk.icon, 17)}</span><div><div class="pk-name">${pk.long}</div><div class="pk-src">${pk.foot}</div></div></div>
+          <div class="pk-bal num">${money(b)} <small>left of ${money(pk.max)}</small></div>
+          <div class="bar ${k}"><i style="width:${(b / pk.max) * 100}%"></i></div>
+          <div class="pk-foot">${money(pk.max - b)} used</div>
+        </div>
+        <section><div class="sec-h"><h2>How it can be used</h2></div><ul class="rules">${pk.rules.map((r) => `<li>${ic('check', 15)}<span>${r}</span></li>`).join('')}</ul></section>
+        <section><div class="sec-h"><h2>Where it works</h2><small>Tap a provider to apply funds</small></div><div class="stack">${provs.map(provRow).join('')}</div></section>
+        ${blocked.length ? `<section><div class="sec-h"><h2>Not eligible</h2><small>Payments are declined</small></div><div class="stack">${blocked.map((p) => blockedRow(p, k)).join('')}</div></section>` : ''}
+        <section><div class="sec-h"><h2>Activity</h2></div><div class="tx-list">${txns.map((t) => txHTML(t)).join('')}</div></section>
+      </div>`;
   }
-  function flowFor(f) {
-    const p = prov(f.prov);
-    if (f.pocket === 'ost') {
-      if (f.session === 'other') return { label: f.other.trim(), enroll: null, matched: false };
-      const s = p.sessions.find((x) => x.id === f.session);
-      return { label: `${s.name} · ${s.term}`, enroll: 'Enrollment ' + s.id, matched: true };
-    }
-    const per = PERIODS.find((x) => x.id === f.period);
-    return { label: 'Tuition · ' + per.label, enroll: f.acct.trim() ? 'Account ' + f.acct.trim() : null, matched: !!f.acct.trim() };
+
+  function exploreScreen() {
+    const f = S.filter;
+    const list = S.providers.filter((p) => f === 'all' || p.pockets.includes(f));
+    const opts = [['all', 'All']].concat(ORDER.map((k) => [k, POCKETS[k].name]));
+    return `${head('Where your card works')}
+      <div class="body" style="padding-top:14px">
+        <div class="filters">${opts.map(([k, l]) => `<button data-act="filter" data-id="${k}" aria-pressed="${f === k}">${l}</button>`).join('')}</div>
+        <div class="stack">${list.map(provRow).join('')}</div>
+      </div>`;
   }
-  function suggestedAmount(f) {
-    const p = prov(f.prov);
-    if (f.pocket === 'ost') {
-      if (f.session === 'other') return f.amount || 0;
-      return p.sessions.find((x) => x.id === f.session).price;
-    }
-    return p.weekly * PERIODS.find((x) => x.id === f.period).weeks;
-  }
-  function setProv(f, id) {
+
+  function providerScreen(id) {
     const p = prov(id);
-    f.prov = id; f.session = null; f.other = ''; f.period = null; f.acct = p.acct || ''; f.amount = 0;
-    const kids = POCKETS[f.pocket].kids;
-    f.kid = kids.length === 1 ? kids[0] : null;
-    if (f.pocket === 'ost') {
-      const reg = p.sessions.find((s) => s.kid && !s.paid);
-      if (reg) { f.kid = reg.kid; f.session = reg.id; }
-    }
-  }
-  function flowSheet() {
-    const f = S.flow;
-    const titles = { 1: 'Pay from', 2: 'Pay to', 3: 'What it’s for', 4: 'Review and send' };
-    let body = '', foot = '';
-    if (f.step === 1) {
-      body = `<div class="q">Which funds are you using?</div><div class="stack">${['ost', 'cc'].map((k) => `
-        <button class="opt" data-act="f-pocket" data-id="${k}" aria-pressed="${f.pocket === k}"><span class="pk-ic ${k}">${ic(POCKETS[k].icon, 17)}</span>
-          <span class="grow"><b>${POCKETS[k].name}</b><span class="s">${POCKETS[k].source} · for ${POCKETS[k].kids.map((x) => KIDS[x].name).join(' & ')}</span></span><span class="right num">${money(S.bal[k])}</span></button>`).join('')}</div>`;
-    } else if (f.step === 2) {
-      const list = S.providers.filter((p) => p.pocket === f.pocket);
-      body = `<div><div class="q">Choose a provider <small>· only approved providers can be paid</small></div><div class="stack">${list.filter((p) => !p.blocked).map((p) =>
-        `<button class="opt" data-act="f-prov" data-id="${p.id}" aria-pressed="${f.prov === p.id}"><span class="radio"></span><span class="grow"><b>${esc(p.name)}</b><span class="s">${esc(p.sub)}</span></span>${ic('chev', 16)}</button>`).join('')}</div></div>
-        <div><div class="q">Not eligible for ${POCKETS[f.pocket].name} funds</div><div class="stack">${list.filter((p) => p.blocked).map(blockedRow).join('')}</div></div>`;
-    } else if (f.step === 3) {
-      const p = prov(f.prov);
-      const kids = POCKETS[f.pocket].kids;
-      body = `<div><div class="q">Who is it for?</div><div class="kids">${kids.map((k) => `<button class="kid" data-act="f-kid" data-id="${k}" aria-pressed="${f.kid === k}"><i>${KIDS[k].name[0]}</i>${KIDS[k].name}</button>`).join('')}</div></div>`;
-      if (f.pocket === 'ost') {
-        body += `<div><div class="q">Which sign-up does this pay for?</div><div class="stack">${p.sessions.map((s) => {
-          const pending = S.requests.find((r) => r.session === s.id);
-          const tag = s.paid ? '<span class="badge gray">Paid</span>'
-            : pending ? '<span class="badge amber">Request waiting</span>'
-            : s.kid ? `<span class="badge">${KIDS[s.kid].name} is registered</span>` : '';
-          return `<button class="opt" data-act="f-session" data-id="${s.id}" aria-pressed="${f.session === s.id}" ${s.paid ? 'disabled' : ''}><span class="radio"></span>
-            <span class="grow"><b>${esc(s.name)}${tag}</b><span class="s">${s.term} · ${s.dates} · <span class="mono">${s.id}</span></span></span><span class="right num">${money(s.price)}</span></button>`; }).join('')}
-          <button class="opt" data-act="f-session" data-id="other" aria-pressed="${f.session === 'other'}"><span class="radio"></span><span class="grow"><b>Something else</b><span class="s">Describe it so the provider can find it</span></span></button>
-          ${f.session === 'other' ? `<input class="field" id="f-other" data-field="other" placeholder="e.g. Field trip fee, Nov 8" value="${esc(f.other)}" maxlength="80">` : ''}
-        </div><div class="hint">Linking a sign-up lets the provider match this payment automatically.</div></div>`;
-      } else {
-        body += `<div><div class="q">Which care period?</div><div class="stack">${PERIODS.map((per) => `
-          <button class="opt" data-act="f-period" data-id="${per.id}" aria-pressed="${f.period === per.id}"><span class="radio"></span><span class="grow"><b>${per.label}</b><span class="s">${per.weeks} week${per.weeks > 1 ? 's' : ''} at ${money(p.weekly)}/week</span></span><span class="right num">${money(p.weekly * per.weeks)}</span></button>`).join('')}</div></div>
-          <div><div class="q">Your account number at ${esc(p.short)} <small>· optional</small></div><input class="field mono" id="f-acct" data-field="acct" value="${esc(f.acct)}" placeholder="From your invoice or parent portal" maxlength="24">
-          <div class="hint">${f.acct ? 'Saved from your last payment.' : 'Adding it lets the provider match the payment automatically.'}</div></div>`;
-      }
-      body += `<div><div class="q">Note to provider <small>· optional</small></div><textarea class="field" id="f-note" data-field="note" maxlength="140" placeholder="${f.pocket === 'cc' ? 'e.g. Lucía will be out Nov 11 for a doctor’s visit' : 'e.g. She has a peanut allergy'}">${esc(f.note)}</textarea></div>`;
-    } else if (f.step === 4) {
-      const p = prov(f.prov), info = flowFor(f), after = S.bal[f.pocket] - f.amount;
-      if (!f.ref) f.ref = newRef();
-      body = `<div><div class="q">Amount</div><div class="amt-wrap"><span>$</span><input id="f-amt" data-field="amount" inputmode="decimal" value="${f.amount || ''}" placeholder="0" aria-label="Amount"></div>
-          <div class="after num ${after < 0 ? 'bad' : ''}" id="f-after">${after < 0 ? `More than the ${money(S.bal[f.pocket])} left in ${POCKETS[f.pocket].name}` : `<span>${POCKETS[f.pocket].name} after this</span><b>${money(S.bal[f.pocket])} → ${money(after)}</b>`}</div></div>
-        <div><div class="q">What ${esc(p.short)} will see</div><div class="slip">
-          <div class="slip-h"><span>MY Denver Card payment</span><span class="mono">${f.ref}</span></div>
-          <dl><dt>Family</dt><dd>${FAMILY}</dd><dt>Child</dt><dd>${kidShort(f.kid)}</dd><dt>For</dt><dd>${esc(info.label)}</dd>
-            ${info.enroll ? `<dt>${info.enroll.split(' ')[0]}</dt><dd class="mono">${esc(info.enroll.split(' ').slice(1).join(' '))}</dd>` : ''}
-            ${f.note.trim() ? `<dt>Note</dt><dd style="font-weight:500">“${esc(f.note.trim())}”</dd>` : ''}
-            <dt>Funds</dt><dd>${POCKETS[f.pocket].source}</dd><dt>Amount</dt><dd class="num" id="slip-amt">${money(f.amount || 0)}</dd></dl>
-          <div class="slip-f ${info.matched ? 'ok' : 'rev'}">${info.matched ? `${ic('check', 14)}Matches automatically to ${esc(info.enroll)}` : `${ic('inbox', 14)}Provider matches this one by hand using your details`}</div>
-        </div></div>`;
+    const accepted = p.pockets;
+    const off = Object.keys(p.notFor || {});
+    const applicable = accepted.reduce((a, k) => a + S.bal[k], 0);
+    const kidsHere = Array.from(new Set(accepted.flatMap((k) => POCKETS[k].kids))).map((x) => KIDS[x].name);
+    const history = S.txns.filter((t) => t.prov === id);
+    const pending = S.requests.filter((r) => r.prov === id);
+
+    const fund = `<div class="fundcard">
+        <svg class="mtn" viewBox="0 0 400 80" preserveAspectRatio="none" aria-hidden="true"><polygon points="0,80 30,55 65,68 110,30 155,52 200,14 250,46 295,18 340,42 380,28 400,40 400,80" fill="#fff"/></svg>
+        <div class="fc-label">Your card at ${esc(p.short)}</div>
+        <div class="fc-total num">${accepted.length ? money(applicable) : '$0'}</div>
+        <div class="fc-sub">${accepted.length ? `can go toward ${kidsHere.join(' or ')}’s ${p.type === 'childcare' ? 'care' : 'programs'} here` : 'None of your funds can be used here'}</div>
+        <div class="fc-lines">
+          ${accepted.map((k) => `<div class="fc-line"><b><span class="fc-dot" style="background:${POCKETS[k].color}"></span>${POCKETS[k].name}</b><span class="amt num">${money(S.bal[k])}</span>
+            <small>For ${kidList(k)} · ${POCKETS[k].foot}</small><div class="bar ${k}"><i style="width:${(S.bal[k] / POCKETS[k].max) * 100}%"></i></div></div>`).join('')}
+          ${off.map((k) => `<div class="fc-line off"><b><span class="fc-dot" style="background:${POCKETS[k].color}"></span>${POCKETS[k].name}</b><span class="amt">${ic('lock', 14)}</span><small>${esc(p.notFor[k])}</small></div>`).join('')}
+        </div>
+        ${accepted.length ? `<div class="fc-note">${ic('link', 15)}<span>${p.type === 'childcare'
+          ? `Send ${esc(p.short)} a payment from CCAP and note exactly what it covers.`
+          : `Get a one-time card for the program you pick, then use it at checkout on ${esc(p.short)}’s registration page.`}</span></div>` : ''}
+      </div>`;
+
+    let items = '';
+    if (p.type === 'childcare') {
+      items = accepted.length ? `<div class="item">
+          <div class="item-top"><div><b>Send a payment to ${esc(p.short)}</b><span class="s">One payment from CCAP for tuition, fees or anything else you owe. Add a note so they know exactly what it covers.</span></div></div>
+          <div class="cover ccap"><div class="row"><span>Weekly rate for ${kidList('ccap')}</span><b class="num">${money(p.weekly)}</b></div><div class="row"><span>CCAP available now</span><b class="num">${money(S.bal.ccap)}</b></div></div>
+          <div class="item-acts"><span class="tag-reg">${ic('send', 13)}Paid directly to ${esc(p.short)}</span><button class="btn amber sm" data-act="ccpay" data-prov="${p.id}" ${S.bal.ccap <= 0 ? 'disabled' : ''}>Send a payment</button></div>
+        </div>`
+        : `<div class="item"><div class="empty">CCAP can only pay licensed childcare providers.</div></div>`;
     } else {
-      const p = prov(f.prov);
-      return `<div class="sheet-body"><div class="done"><div class="tick">${ic('check', 30)}</div><h4>${money(f.amount)} sent</h4>
-        <p>to ${esc(p.name)} for ${KIDS[f.kid].name}</p><p style="margin-top:10px">Reference <span class="mono">${f.ref}</span></p>
-        <p style="margin-top:4px">${POCKETS[f.pocket].name} balance is now <b style="color:var(--navy)">${money(S.bal[f.pocket])}</b></p></div>
-        <div class="stack"><button class="btn line block" data-act="seeprov" data-id="${p.id}">See what ${esc(p.short)} sees</button><button class="btn navy block" data-act="close">Done</button></div></div>`;
+      items = p.sessions.map((s) => itemCard(p, { id: s.id, name: s.name, sub: `${s.term} · ${s.dates}`, price: s.price, kid: s.kid, paid: s.paid, pending: S.requests.some((r) => r.session === s.id) })).join('');
     }
-    foot = `<div class="sheet-foot">${f.step === 4
-      ? `<button class="btn amber block" id="f-send" data-act="f-send" ${flowOK(f) ? '' : 'disabled'}>${ic('send', 16)}Send ${money(f.amount || 0)}</button>`
-      : `<button class="btn navy block" data-act="f-next" ${flowOK(f) ? '' : 'disabled'}>Continue</button>`}</div>`;
-    return `<div class="sheet-head">${f.step > f.start ? `<button class="back" data-act="f-back" aria-label="Back">${ic('back', 20)}</button>` : '<span class="sp" style="width:32px"></span>'}
-        <h3>${titles[f.step]}</h3><button class="back" data-act="close" aria-label="Close">${ic('x', 18)}</button></div>
-      <div class="steps">${[1, 2, 3, 4].map((n) => `<i class="${n <= f.step ? 'on' : ''}"></i>`).join('')}</div>
-      <div class="sheet-body">${body}</div>${foot}`;
+
+    return `${head(p.short)}
+      <div class="prof-hero">
+        <div class="prof-type"><span class="chip">${TYPES[p.type]}</span>${accepted.map((k) => `<span class="chip ${k}">${POCKETS[k].name}</span>`).join('')}${off.map((k) => `<span class="chip off">${POCKETS[k].name}</span>`).join('')}</div>
+        <h2>${esc(p.name)}</h2>
+        <p>${esc(p.desc)}</p>
+        <div class="prof-facts"><span>${ic('pin', 14)}${esc(p.hood)}</span><span>${ic('clock', 14)}${esc(p.hours)}</span></div>
+      </div>
+      <div class="body" style="padding-top:16px">
+        ${fund}
+        <section><div class="sec-h"><h2>${p.type === 'childcare' ? 'Pay for care' : 'Register and pay'}</h2>${p.type === 'childcare' ? '' : '<small>Pay with a one-time card</small>'}</div><div class="stack">${items}</div></section>
+        ${pending.length ? `<section><div class="sec-h"><h2>Waiting on you</h2></div><div class="stack">${pending.map((r) => `<div class="req"><div class="req-top"><span class="pk-ic ${r.pocket}">${ic('inbox', 16)}</span><div><div class="req-who">${esc(r.forLabel)}</div><div class="req-what">${KIDS[r.kid].name} · ${esc(r.ref)} · sent ${r.sent}</div></div><div class="req-amt num">${money(r.amount)}</div></div>
+          <div class="req-acts"><button class="btn quiet sm" data-act="decline" data-id="${r.id}">Decline</button><button class="btn teal sm" data-act="approve" data-id="${r.id}" ${r.amount > S.bal[r.pocket] ? 'disabled' : ''}>Approve and pay</button></div></div>`).join('')}</div></section>` : ''}
+        <section><div class="sec-h"><h2>Your payments here</h2></div>${history.length ? `<div class="tx-list">${history.map((t) => txHTML(t, false)).join('')}</div>` : `<div class="tx-list"><div class="empty">No payments to ${esc(p.short)} yet.</div></div>`}</section>
+      </div>`;
+  }
+
+  function itemCard(p, it) {
+    if (!p.pockets.length) return '';
+    const k = bestPocket(p, it.price);
+    const b = S.bal[k];
+    const covered = Math.min(it.price, b);
+    const due = it.price - covered;
+    const hold = S.txns.find((t) => t.method === 'vcard' && t.status === 'hold' && t.enroll === 'Enrollment ' + it.id);
+    if (hold) {
+      return `<div class="item">
+        <div class="item-top"><div><b>${esc(it.name)}</b><span class="s">${esc(it.sub)} · <span class="mono">${it.id}</span></span></div><div class="item-price num">${money(it.price)}<small>program fee</small></div></div>
+        <div class="cover ${hold.pocket}"><div class="row"><span>Held on card •• ${hold.card.last4}</span><b class="num">${money(hold.amount)}</b></div><div class="row" style="color:var(--muted)"><span>Waiting for checkout at ${esc(p.short)}</span></div></div>
+        <div class="item-acts"><span class="tag-reg">${ic('card', 13)}Temporary card ready</span><button class="btn navy sm" data-act="showvc" data-id="${hold.id}">Show card</button></div>
+      </div>`;
+    }
+    let status = '';
+    if (it.paid) status = `<span class="tag-reg">${ic('check', 13)}Paid</span>`;
+    else if (it.pending) status = `<span class="tag-reg" style="color:var(--amber-ink)">${ic('inbox', 13)}Request waiting</span>`;
+    else if (it.kid && p.type !== 'childcare') status = `<span class="tag-reg">${ic('check', 13)}${KIDS[it.kid].name} is registered</span>`;
+    else status = '<span></span>';
+    const others = p.pockets.filter((x) => x !== k);
+    return `<div class="item">
+      <div class="item-top"><div><b>${esc(it.name)}</b><span class="s">${esc(it.sub)}${p.type !== 'childcare' ? ` · <span class="mono">${it.id}</span>` : ''}</span></div>
+        <div class="item-price num">${money(it.price)}<small>${p.type === 'childcare' ? 'tuition' : 'program fee'}</small></div></div>
+      ${it.paid ? '' : `<div class="cover ${k}">
+        <div class="row"><span>${POCKETS[k].name} covers</span><b class="num">${money(covered)}</b></div>
+        ${due > 0 ? `<div class="row due"><span>You’d pay the provider</span><b class="num">${money(due)}</b></div>` : `<div class="row"><span>${POCKETS[k].name} left after</span><b class="num">${money(b - covered)}</b></div>`}
+        ${others.length ? `<div class="row" style="color:var(--muted)"><span>Or use ${others.map((x) => POCKETS[x].name).join(', ')}</span><span class="num">${others.map((x) => money(S.bal[x])).join(', ')} left</span></div>` : ''}
+      </div>`}
+      <div class="item-acts">${status}${it.paid ? '' : `<button class="btn amber sm" data-act="apply" data-prov="${p.id}" data-item="${it.id}" ${covered <= 0 ? 'disabled' : ''}>${ic('card', 15)}Pay with card</button>`}</div>
+    </div>`;
+  }
+
+  // ---------- Temporary card (activities and education) ----------
+  function fakeCard() {
+    const d = () => Math.floor(Math.random() * 10);
+    let n = '4815';
+    for (let i = 0; i < 12; i++) n += d();
+    return { num: n.replace(/(\d{4})(?=\d)/g, '$1 '), last4: n.slice(-4), exp: '11/26', cvc: '' + d() + d() + d(), expires: 'Nov 2' };
+  }
+  const closeBtn = () => `<button class="back" data-act="close" aria-label="Close">${ic('x', 18)}</button>`;
+  const spacer = '<span class="sp" style="width:32px"></span>';
+  function vcardSheet() {
+    const v = S.vc, p = prov(v.prov), s = p.sessions.find((x) => x.id === v.session);
+    if (!v.txn) {
+      const amt = Math.min(s.price, S.bal[v.pocket]);
+      const due = s.price - amt;
+      const ok = v.kid && amt > 0;
+      return `<div class="sheet-head">${spacer}<h3>Pay with a temporary card</h3>${closeBtn()}</div>
+      <div class="sheet-body">
+        <div class="slip"><div class="slip-h"><span>${esc(p.name)}</span><span class="mono">${s.id}</span></div>
+          <dl><dt>Program</dt><dd>${esc(s.name)}</dd><dt>When</dt><dd>${s.term} · ${s.dates}</dd><dt>Fee</dt><dd class="num">${money(s.price)}</dd></dl></div>
+        ${p.pockets.length > 1 ? `<div><div class="q">Load the card from</div><div class="stack">${p.pockets.map((k) => `<button class="opt" data-act="v-pocket" data-id="${k}" aria-pressed="${v.pocket === k}"><span class="radio"></span><span class="grow"><b>${POCKETS[k].name}</b><span class="s">For ${kidList(k)}</span></span><span class="right num">${money(S.bal[k])}</span></button>`).join('')}</div></div>` : ''}
+        <div><div class="q">Who is it for?</div><div class="kids">${POCKETS[v.pocket].kids.map((k) => `<button class="kid" data-act="v-kid" data-id="${k}" aria-pressed="${v.kid === k}"><i>${KIDS[k].name[0]}</i>${KIDS[k].name}</button>`).join('')}</div></div>
+        <div class="cover ${v.pocket}">
+          <div class="row"><span>Loaded on the card from ${POCKETS[v.pocket].name}</span><b class="num">${money(amt)}</b></div>
+          ${due > 0 ? `<div class="row due"><span>You pay at checkout with your own card</span><b class="num">${money(due)}</b></div>` : `<div class="row"><span>${POCKETS[v.pocket].name} left after</span><b class="num">${money(S.bal[v.pocket] - amt)}</b></div>`}
+        </div>
+        <ul class="rules">
+          <li>${ic('card', 15)}<span>We make a one-time card number that only works at ${esc(p.short)}, for up to ${money(amt)}.</span></li>
+          <li>${ic('ext', 15)}<span>Open ${esc(p.short)}’s registration page and sign up for ${esc(s.name)}.</span></li>
+          <li>${ic('link', 15)}<span>Enter the card number at checkout. The charge is linked to ${v.kid ? KIDS[v.kid].name + '’s' : 'your child’s'} enrollment automatically.</span></li>
+        </ul>
+      </div>
+      <div class="sheet-foot"><button class="btn amber block" data-act="v-create" ${ok ? '' : 'disabled'}>${ic('card', 16)}Create temporary card</button></div>`;
+    }
+    const t = S.txns.find((x) => x.id === v.txn), c = t.card;
+    const used = t.status === 'ok';
+    const num = v.revealed ? c.num : '•••• •••• •••• ' + c.last4;
+    return `<div class="sheet-head">${spacer}<h3>Temporary card</h3>${closeBtn()}</div>
+      <div class="sheet-body">
+        <button class="vcard tcard ${used ? 'used' : ''}" data-act="v-reveal" ${used ? 'disabled' : ''} aria-label="${v.revealed ? 'Hide' : 'Show'} card number">
+          <svg class="mtn" viewBox="0 0 400 80" preserveAspectRatio="none" aria-hidden="true"><polygon points="0,80 30,55 65,68 110,30 155,52 200,14 250,46 295,18 340,42 380,28 400,40 400,80" fill="#fff"/></svg>
+          <div class="l1"><div class="logo"><b>MY</b><span>Denver Card</span></div><span class="tc-tag">${used ? 'Used' : 'One-time card'}</span></div>
+          <div class="tc-num mono">${num}</div>
+          <div class="tc-row"><div><small>Exp</small><b class="mono">${v.revealed ? c.exp : '••/••'}</b></div><div><small>CVC</small><b class="mono">${v.revealed ? c.cvc : '•••'}</b></div><div><small>Limit</small><b class="num">${money(t.amount)}</b></div></div>
+          <div class="tc-hint">${used ? `Charged by ${esc(p.short)}` : v.revealed ? 'Tap the card to hide the number' : 'Tap the card to show the number'}</div>
+        </button>
+        ${v.revealed && !used ? `<div class="copyrow"><button class="btn line sm" data-act="v-copy">Copy card number</button><span class="hint" id="v-copied"></span></div>` : ''}
+        <div class="cover ${t.pocket}">
+          <div class="row"><span>Works only at</span><b>${esc(p.name)}</b></div>
+          <div class="row"><span>For</span><b>${KIDS[t.kid].name} · ${esc(s.name)}</b></div>
+          <div class="row"><span>${used ? 'Charged' : 'Held'} from ${POCKETS[t.pocket].name}</span><b class="num">${money(t.amount)}</b></div>
+          <div class="row"><span>${used ? 'Linked to' : 'Expires'}</span><b>${used ? esc(t.enroll) : c.expires + ' if unused'}</b></div>
+        </div>
+        ${used ? '' : `<div><button class="btn navy block" data-act="v-register">Register for ${esc(s.name)}${ic('ext', 15)}</button>
+          <div class="hint" style="text-align:center">Opens ${esc(p.short)}’s own registration page. Enter this card at checkout.</div></div>`}
+      </div>
+      <div class="sheet-foot">${used ? '<button class="btn navy block" data-act="close">Done</button>'
+        : '<div class="demo-row"><button class="btn quiet sm" data-act="v-cancel">Cancel card</button><button class="btn line sm" data-act="v-charge">Demo: simulate checkout</button></div>'}</div>`;
+  }
+
+  // ---------- Childcare lump-sum payment ----------
+  const CC_CATS = ['Tuition', 'Registration fee', 'Supply fee', 'Late pickup fee'];
+  function ccOK(c) {
+    return c.kid && c.amount > 0 && c.amount <= S.bal.ccap && c.cat && c.note.trim().length >= 3;
+  }
+  function ccSheet() {
+    const c = S.cc, p = prov(c.prov), bal = S.bal.ccap;
+    if (c.done) {
+      return `<div class="sheet-head">${spacer}<h3>Payment sent</h3>${closeBtn()}</div>
+        <div class="sheet-body"><div class="done"><div class="tick">${ic('check', 30)}</div><h4>${money(c.amount)} sent</h4>
+          <p>to ${esc(p.name)} for ${KIDS[c.kid].name}</p><p style="margin-top:10px">${esc(c.cat)}: ${esc(c.note.trim())}</p>
+          <p style="margin-top:10px">Reference <span class="mono">${c.ref}</span></p>
+          <p style="margin-top:4px">CCAP balance is now <b style="color:var(--navy)">${money(bal)}</b></p></div>
+          <button class="btn navy block" data-act="close">Done</button></div>`;
+    }
+    const seen = new Set();
+    const quick = [['1 week', p.weekly], ['2 weeks', p.weekly * 2], ['All remaining', bal]]
+      .filter(([, a]) => a > 0 && a <= bal && !seen.has(a) && seen.add(a));
+    return `<div class="sheet-head">${spacer}<h3>Send a payment</h3>${closeBtn()}</div>
+      <div class="sheet-body">
+        <div class="cover ccap"><div class="row"><span>CCAP available for ${kidList('ccap')}</span><b class="num">${money(bal)}</b></div><div class="row" style="color:var(--muted)"><span>${POCKETS.ccap.foot}</span></div></div>
+        <div><div class="q">Who is it for?</div><div class="kids">${POCKETS.ccap.kids.map((k) => `<button class="kid" data-act="cc-kid" data-id="${k}" aria-pressed="${c.kid === k}"><i>${KIDS[k].name[0]}</i>${KIDS[k].name}</button>`).join('')}</div></div>
+        <div><div class="q">Amount</div><div class="amt-wrap"><span>$</span><input id="cc-amt" data-field="cc-amount" inputmode="decimal" value="${c.amount || ''}" placeholder="0" aria-label="Amount"></div>
+          <div class="quick">${quick.map(([l, a]) => `<button class="chipbtn" data-act="cc-quick" data-amt="${a}" aria-pressed="${c.amount === a}">${l} · ${money(a)}</button>`).join('')}</div>
+          <div class="after num" id="cc-after">${ccAfter(c)}</div></div>
+        <div><div class="q">What is this payment for?</div>
+          <div class="quick" style="margin-top:0">${CC_CATS.map((x) => `<button class="chipbtn" data-act="cc-cat" data-id="${x}" aria-pressed="${c.cat === x}">${x}</button>`).join('')}</div>
+          <textarea class="field" id="cc-note" data-field="cc-note" maxlength="160" style="margin-top:8px" placeholder="Be specific: dates, classroom, invoice number. For example: Oct 27 – Nov 7, Toddler room, invoice LS-1042">${esc(c.note)}</textarea>
+          <div class="hint">This is what ${esc(p.short)} sees, so they can match the payment without calling you.</div></div>
+        <div><div class="q">Your account number at ${esc(p.short)} <small>· optional</small></div><input class="field mono" id="cc-acct" data-field="cc-acct" value="${esc(c.acct)}" placeholder="From your invoice or parent portal" maxlength="24"></div>
+        <div><div class="q">What ${esc(p.short)} will see</div><div class="slip">
+          <div class="slip-h"><span>MY Denver Card payment · CCAP</span><span class="mono">${c.ref}</span></div>
+          <dl><dt>Family</dt><dd>${FAMILY}</dd><dt>Child</dt><dd id="cc-s-kid">${kidShort(c.kid) || '—'}</dd><dt>For</dt><dd id="cc-s-for">${ccFor(c)}</dd>
+            <dt>Account</dt><dd class="mono" id="cc-s-acct">${esc(c.acct.trim()) || '—'}</dd><dt>Amount</dt><dd class="num" id="cc-s-amt">${money(c.amount || 0)}</dd></dl>
+        </div></div>
+      </div>
+      <div class="sheet-foot"><button class="btn amber block" id="cc-send" data-act="cc-send" ${ccOK(c) ? '' : 'disabled'}>${ic('send', 16)}Send ${money(c.amount || 0)} to ${esc(p.short)}</button></div>`;
+  }
+  function ccFor(c) {
+    const n = c.note.trim();
+    if (!c.cat && !n) return '<span style="color:var(--faint);font-weight:500">Add what this covers</span>';
+    return esc([c.cat, n].filter(Boolean).join(': '));
+  }
+  function ccAfter(c) {
+    const after = S.bal.ccap - c.amount;
+    return after < 0 ? `More than the ${money(S.bal.ccap)} left in CCAP` : `<span>CCAP after this</span><b>${money(S.bal.ccap)} → ${money(after)}</b>`;
+  }
+  function ccRefresh() {
+    const c = S.cc;
+    const a = document.getElementById('cc-after');
+    a.className = 'after num' + (S.bal.ccap - c.amount < 0 ? ' bad' : '');
+    a.innerHTML = ccAfter(c);
+    document.getElementById('cc-s-for').innerHTML = ccFor(c);
+    document.getElementById('cc-s-acct').textContent = c.acct.trim() || '—';
+    document.getElementById('cc-s-amt').textContent = money(c.amount || 0);
+    const btn = document.getElementById('cc-send');
+    btn.disabled = !ccOK(c);
+    btn.innerHTML = ic('send', 16) + 'Send ' + money(c.amount || 0) + ' to ' + esc(prov(c.prov).short);
   }
 
   function detailsSheet() {
@@ -676,7 +880,7 @@ tr.flash td { animation: flash 2.4s ease-out; }
     const ok = d.kid && (d.session === 'other' ? d.other.trim().length > 2 : !!d.session);
     return `<div class="sheet-head"><span class="sp" style="width:32px"></span><h3>Add details</h3><button class="back" data-act="close" aria-label="Close">${ic('x', 18)}</button></div>
       <div class="sheet-body">
-        <div class="slip"><div class="slip-h"><span>Card tap · ${t.date}</span><span class="mono">${t.ref}</span></div><dl><dt>Provider</dt><dd>${esc(p.name)}</dd><dt>Amount</dt><dd class="num">${money(t.amount)}</dd></dl></div>
+        <div class="slip"><div class="slip-h"><span>Card tap · ${t.date}</span><span class="mono">${t.ref}</span></div><dl><dt>Provider</dt><dd>${esc(p.name)}</dd><dt>Funds</dt><dd>${POCKETS[t.pocket].name}</dd><dt>Amount</dt><dd class="num">${money(t.amount)}</dd></dl></div>
         <div><div class="q">Who was it for?</div><div class="kids">${POCKETS[t.pocket].kids.map((k) => `<button class="kid" data-act="d-kid" data-id="${k}" aria-pressed="${d.kid === k}"><i>${KIDS[k].name[0]}</i>${KIDS[k].name}</button>`).join('')}</div></div>
         <div><div class="q">What did it pay for?</div><div class="stack">${p.sessions.map((s) => `<button class="opt" data-act="d-session" data-id="${s.id}" aria-pressed="${d.session === s.id}"><span class="radio"></span><span class="grow"><b>${esc(s.name)}</b><span class="s">${s.term} · <span class="mono">${s.id}</span></span></span><span class="right num">${money(s.price)}</span></button>`).join('')}
           <button class="opt" data-act="d-session" data-id="other" aria-pressed="${d.session === 'other'}"><span class="radio"></span><span class="grow"><b>Something else</b></span></button>
@@ -694,61 +898,45 @@ tr.flash td { animation: flash 2.4s ease-out; }
           <div><div class="nm">•••• •••• •••• 4821</div><div class="who">MARIA ${FAMILY.toUpperCase()} · ${money(total())} available</div></div></div>
         <ul class="rules">
           <li>${ic('lock', 15)}<span>Works only at approved providers. Other purchases are declined.</span></li>
-          <li>${ic('check', 15)}<span>The right pocket pays automatically: childcare providers draw from Childcare, activity providers from Out-of-School.</span></li>
-          <li>${ic('inbox', 15)}<span>After each tap we’ll ask who it was for, so the provider can match the payment.</span></li>
+          <li>${ic('check', 15)}<span>The right stream pays automatically: childcare providers draw from CCAP, activity providers from MySpark, and schools and tutors from SGO funds.</span></li>
+          <li>${ic('inbox', 15)}<span>After each tap we’ll ask who it was for, so the payment links to the right sign-up.</span></li>
         </ul>
       </div>`;
   }
 
-  // ---------- Provider panel ----------
-  function providerPanel() {
-    const ids = ['dsa', 'dpr', 'cprd', 'ls', 'rosa'];
-    const p = prov(S.provView);
-    const rows = S.txns.filter((t) => t.kind === 'pay' && t.prov === p.id);
-    const reqs = S.requests.filter((r) => r.prov === p.id);
-    const sum = rows.reduce((a, t) => a + t.amount, 0);
-    const auto = rows.filter((t) => t.status === 'ok').length;
-    const review = rows.length - auto;
-    const pill = (t) => t.status === 'ok' ? `<span class="pill ok">${ic('check', 12)}Auto-matched</span>`
-      : t.status === 'rev' ? '<span class="pill rev">Match by hand</span>' : '<span class="pill need">Missing details</span>';
-    return `<div class="panel">
-      <div class="panel-h"><div class="eyebrow">Provider view</div><h2>${esc(p.name)}</h2>
-        <p>Deposits from MY Denver Card arrive with the family’s details attached. Each payment is matched to an enrollment, invoice or family account.</p>
-        <div class="pv-tabs">${ids.map((id) => `<button data-act="pv" data-id="${id}" aria-pressed="${id === p.id}">${esc(prov(id).short)}</button>`).join('')}</div></div>
-      <div class="pv-sum"><div><b class="num">${money(sum)}</b><span>Received from MY Denver Card</span></div><div><b class="num">${auto}</b><span>Matched automatically</span></div><div><b class="num" style="color:${review ? 'var(--red)' : 'inherit'}">${review}</b><span>Need a closer look</span></div></div>
-      <div class="pv-body">
-        ${reqs.length ? `<div><h3>Requests you sent</h3><div class="tbl-wrap"><table><thead><tr><th>Sent</th><th>Child</th><th>For</th><th>Your ref</th><th class="amt">Amount</th><th>Status</th></tr></thead><tbody>
-          ${reqs.map((r) => `<tr><td>${r.sent}</td><td>${kidShort(r.kid)}</td><td>${esc(r.forLabel)}</td><td class="mono">${esc(r.ref)}</td><td class="amt">${money(r.amount)}</td><td><span class="pill wait">Waiting on family</span></td></tr>`).join('')}
-          </tbody></table></div></div>` : ''}
-        <div><h3>Payments received</h3>${rows.length ? `<div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Reference</th><th>Child</th><th>For</th><th>Family note</th><th class="amt">Amount</th><th>Match</th></tr></thead><tbody>
-          ${rows.map((t) => `<tr class="${S.flash === t.ref ? 'flash' : ''}"><td>${t.date}<span class="sub">${t.method === 'card' ? 'Card tap' : t.method === 'request' ? 'Your request' : 'Family app'}</span></td>
-            <td class="mono">${t.ref}</td><td>${t.kid ? kidShort(t.kid) : '<span class="sub">—</span>'}<span class="sub">${FAMILY} family</span></td>
-            <td>${t.forLabel ? esc(t.forLabel) : '<span class="sub">Not provided</span>'}${t.enroll ? `<span class="sub mono">${esc(t.enroll)}</span>` : ''}</td>
-            <td class="note">${t.note ? '“' + esc(t.note) + '”' : ''}</td><td class="amt">${money(t.amount)}</td><td>${pill(t)}</td></tr>`).join('')}
-          </tbody></table></div>` : `<div class="tbl-wrap"><div class="empty">No payments from this family yet. Pay ${esc(p.short)} from the phone to see one arrive.</div></div>`}</div>
-        <div class="legend"><span><span class="pill ok">Auto-matched</span>Linked to an enrollment, invoice or account</span><span><span class="pill rev">Match by hand</span>Family described it in their own words</span><span><span class="pill need">Missing details</span>Card tap the family hasn’t annotated yet</span></div>
-      </div></div>`;
+  // ---------- Right column: jump links ----------
+  const JUMPS = [
+    { to: 'wallet', icon: 'wallet', cls: 'load', title: 'Wallet home', sub: 'All three streams and recent activity' },
+    { to: 'prov:ls', icon: 'heart', cls: 'ccap', title: 'Little Sprouts Early Learning', sub: 'Childcare profile · CCAP' },
+    { to: 'prov:dsa', icon: 'sun', cls: 'myspark', title: 'Denver STEM Alliance', sub: 'Activity profile · MySpark or SGO' },
+    { to: 'prov:mhtp', icon: 'book', cls: 'sgo', title: 'Mile High Test Prep', sub: 'Tutoring profile · SGO only' },
+    { to: 'prov:sunrise', icon: 'lock', cls: 'load', title: 'Sunrise Drop-In Play', sub: 'Not eligible for CCAP' },
+    { to: 'explore', icon: 'compass', cls: 'load', title: 'All providers', sub: 'Filter by funding stream' }
+  ];
+  function jumpsHTML() {
+    return JUMPS.map((j) => `<button class="jump" data-act="jump" data-to="${j.to}" aria-current="${S.screen === j.to}"><span class="pk-ic ${j.cls}">${ic(j.icon, 16)}</span><span><b>${esc(j.title)}</b><span class="s">${esc(j.sub)}</span></span></button>`).join('');
   }
 
   // ---------- Render ----------
   const phone = document.getElementById('phone');
-  const provEl = document.getElementById('provider');
-  const stage = document.getElementById('stage');
+  const jumps = document.getElementById('jumps');
   function render() {
     const keep = phone.querySelector('.scroll');
     const top = keep && S.keepScroll ? keep.scrollTop : 0;
-    const screen = S.screen === 'wallet' ? walletScreen() : pocketScreen(S.screen.split(':')[1]);
+    const scr = S.screen;
+    const screen = scr === 'wallet' ? walletScreen()
+      : scr === 'explore' ? exploreScreen()
+      : scr.startsWith('pocket:') ? pocketScreen(scr.slice(7))
+      : providerScreen(scr.slice(5));
     let sheet = '';
     if (S.sheet) {
-      const inner = S.sheet === 'flow' ? flowSheet() : S.sheet === 'details' ? detailsSheet() : cardSheet();
+      const inner = S.sheet === 'vcard' ? vcardSheet() : S.sheet === 'cc' ? ccSheet() : S.sheet === 'details' ? detailsSheet() : cardSheet();
       sheet = `<div class="backdrop" data-act="close"></div><div class="sheet" role="dialog" aria-modal="true">${inner}</div>`;
     }
     phone.innerHTML = `<div class="scroll">${screen}</div>${navHTML()}${sheet}${S.toast ? `<div class="toast" role="status">${esc(S.toast)}</div>` : ''}`;
     if (top) phone.querySelector('.scroll').scrollTop = top;
     S.keepScroll = false;
-    provEl.innerHTML = providerPanel();
-    stage.dataset.tab = S.tab;
-    document.querySelectorAll('#tabs button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.id === S.tab)));
+    jumps.innerHTML = jumpsHTML();
   }
   let toastTimer;
   function toast(msg) {
@@ -756,55 +944,96 @@ tr.flash td { animation: flash 2.4s ease-out; }
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => { S.toast = null; S.keepScroll = true; render(); }, 2600);
   }
-  function flashProvider(ref, provId) {
-    S.flash = ref; S.provView = provId;
-    setTimeout(() => { S.flash = null; }, 2600);
+  function go(to) {
+    if (to === S.screen) return;
+    if (to === 'wallet') S.prev = [];
+    else S.prev.push(S.screen);
+    S.screen = to; S.sheet = null; S.vc = null; S.cc = null; S.details = null;
   }
 
   // ---------- Actions ----------
   const A = {
-    home() { S.screen = 'wallet'; S.sheet = null; },
+    go(el) { go(el.dataset.to); },
+    jump(el) {
+      go(el.dataset.to);
+      if (window.matchMedia('(max-width: 999px)').matches) setTimeout(() => phone.scrollIntoView({ behavior: 'smooth', block: 'start' }), 30);
+    },
+    back() { S.screen = S.prev.pop() || 'wallet'; },
+    filter(el) { S.filter = el.dataset.id; S.keepScroll = true; },
     soon(el) { return toast(`${el.dataset.what} isn’t part of this wallet prototype`); },
-    pocket(el) { S.screen = 'pocket:' + el.dataset.id; },
     showcard() { S.sheet = 'card'; S.keepScroll = true; },
-    close() { S.sheet = null; S.flow = null; S.details = null; S.keepScroll = true; },
-    tab(el) { S.tab = el.dataset.id; S.keepScroll = true; },
-    pv(el) { S.provView = el.dataset.id; S.keepScroll = true; },
+    close() { S.sheet = null; S.vc = null; S.cc = null; S.details = null; S.keepScroll = true; },
+    'close-to'(el) { go(el.dataset.to); },
     reset() { S = freshState(); },
-    pay(el) {
-      const f = { step: 1, start: 1, pocket: null, prov: null, kid: null, session: null, other: '', period: null, acct: '', note: '', amount: 0, ref: null };
-      if (el.dataset.pocket) { f.pocket = el.dataset.pocket; f.step = f.start = 2; }
-      if (el.dataset.prov) { setProv(f, el.dataset.prov); f.step = f.start = 3; }
-      S.flow = f; S.sheet = 'flow'; S.keepScroll = true;
+    apply(el) {
+      const p = prov(el.dataset.prov), s = p.sessions.find((x) => x.id === el.dataset.item);
+      const pocket = bestPocket(p, s.price);
+      const kids = POCKETS[pocket].kids;
+      S.vc = { prov: p.id, session: s.id, pocket, kid: s.kid || (kids.length === 1 ? kids[0] : null), txn: null, revealed: false };
+      S.sheet = 'vcard'; S.keepScroll = true;
     },
-    'f-pocket'(el) { S.flow.pocket = el.dataset.id; S.flow.prov = null; S.keepScroll = true; },
-    'f-prov'(el) { setProv(S.flow, el.dataset.id); S.flow.step = 3; S.keepScroll = true; },
-    'f-kid'(el) { S.flow.kid = el.dataset.id; S.keepScroll = true; },
-    'f-session'(el) { S.flow.session = el.dataset.id; S.keepScroll = true; },
-    'f-period'(el) { S.flow.period = el.dataset.id; S.keepScroll = true; },
-    'f-next'() {
-      const f = S.flow;
-      if (!flowOK(f)) return;
-      f.step += 1;
-      if (f.step === 4) f.amount = suggestedAmount(f);
-      S.keepScroll = true;
+    showvc(el) {
+      const t = S.txns.find((x) => x.id === el.dataset.id);
+      S.vc = { prov: t.prov, session: t.enroll.split(' ')[1], pocket: t.pocket, kid: t.kid, txn: t.id, revealed: false };
+      S.sheet = 'vcard'; S.keepScroll = true;
     },
-    'f-back'() { const f = S.flow; if (f.step > f.start) f.step -= 1; S.keepScroll = true; },
-    'f-send'() {
-      const f = S.flow;
-      if (!flowOK(f)) return;
-      const info = flowFor(f);
-      S.bal[f.pocket] = Math.round((S.bal[f.pocket] - f.amount) * 100) / 100;
-      S.txns.unshift({ id: 'n' + (++seq), date: 'Today', kind: 'pay', method: 'app', pocket: f.pocket, prov: f.prov, kid: f.kid, forLabel: info.label, ref: f.ref, enroll: info.enroll, note: f.note.trim(), amount: f.amount, status: info.matched ? 'ok' : 'rev' });
-      if (f.pocket === 'ost' && f.session !== 'other') {
-        const s = prov(f.prov).sessions.find((x) => x.id === f.session);
-        s.paid = true;
-        S.requests = S.requests.filter((r) => r.session !== s.id);
-      }
-      flashProvider(f.ref, f.prov);
-      f.step = 5; S.keepScroll = true;
+    'v-pocket'(el) { const v = S.vc; v.pocket = el.dataset.id; if (v.kid && !POCKETS[v.pocket].kids.includes(v.kid)) v.kid = null; S.keepScroll = true; },
+    'v-kid'(el) { S.vc.kid = el.dataset.id; S.keepScroll = true; },
+    'v-create'() {
+      const v = S.vc, p = prov(v.prov), s = p.sessions.find((x) => x.id === v.session);
+      const amt = Math.min(s.price, S.bal[v.pocket]);
+      if (!v.kid || amt <= 0) return;
+      S.bal[v.pocket] -= amt;
+      const t = { id: 'n' + (++seq), date: 'Today', kind: 'pay', method: 'vcard', pocket: v.pocket, prov: p.id, kid: v.kid, forLabel: `${s.name} · ${s.term}`, ref: newRef(), enroll: 'Enrollment ' + s.id, note: '', amount: amt, status: 'hold', card: fakeCard() };
+      S.txns.unshift(t);
+      S.requests = S.requests.filter((r) => r.session !== s.id);
+      v.txn = t.id; v.revealed = false; S.keepScroll = true;
     },
-    seeprov(el) { S.provView = el.dataset.id; S.sheet = null; S.flow = null; S.tab = 'provider'; setTimeout(() => provEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 30); },
+    'v-reveal'() { S.vc.revealed = !S.vc.revealed; S.keepScroll = true; },
+    'v-copy'() {
+      const t = S.txns.find((x) => x.id === S.vc.txn);
+      const out = document.getElementById('v-copied');
+      const fallback = () => { out.textContent = 'Copy didn’t work here. Select the number on the card instead.'; };
+      try {
+        navigator.clipboard.writeText(t.card.num.replace(/ /g, '')).then(() => { out.textContent = 'Copied'; }, fallback);
+      } catch (err) { fallback(); }
+      return true;
+    },
+    'v-register'() {
+      const v = S.vc, p = prov(v.prov), s = p.sessions.find((x) => x.id === v.session);
+      return toast(`In the real app this opens ${p.short}’s registration page for ${s.name}.`);
+    },
+    'v-charge'() {
+      const v = S.vc, t = S.txns.find((x) => x.id === v.txn), p = prov(t.prov);
+      t.status = 'ok'; v.revealed = false;
+      const s = p.sessions.find((x) => x.id === v.session);
+      s.paid = true;
+      return toast(`${p.short} charged ${money(t.amount)}. Linked to ${t.enroll}.`);
+    },
+    'v-cancel'() {
+      const t = S.txns.find((x) => x.id === S.vc.txn);
+      S.bal[t.pocket] += t.amount;
+      S.txns = S.txns.filter((x) => x !== t);
+      S.sheet = null; S.vc = null;
+      return toast(`Card canceled. ${money(t.amount)} returned to ${POCKETS[t.pocket].name}.`);
+    },
+    ccpay(el) {
+      const p = prov(el.dataset.prov);
+      const kids = POCKETS.ccap.kids;
+      S.cc = { prov: p.id, kid: kids.length === 1 ? kids[0] : null, amount: 0, cat: null, note: '', acct: p.acct || '', ref: newRef(), done: false };
+      S.sheet = 'cc'; S.keepScroll = true;
+    },
+    'cc-kid'(el) { S.cc.kid = el.dataset.id; S.keepScroll = true; },
+    'cc-quick'(el) { S.cc.amount = Number(el.dataset.amt); S.keepScroll = true; },
+    'cc-cat'(el) { S.cc.cat = el.dataset.id; S.keepScroll = true; },
+    'cc-send'() {
+      const c = S.cc;
+      if (!ccOK(c)) return;
+      S.bal.ccap = Math.round((S.bal.ccap - c.amount) * 100) / 100;
+      const acct = c.acct.trim();
+      S.txns.unshift({ id: 'n' + (++seq), date: 'Today', kind: 'pay', method: 'app', pocket: 'ccap', prov: c.prov, kid: c.kid, forLabel: `${c.cat}: ${c.note.trim()}`, ref: c.ref, enroll: acct ? 'Account ' + acct : null, note: '', amount: c.amount, status: acct ? 'ok' : 'rev' });
+      c.done = true; S.keepScroll = true;
+    },
     approve(el) {
       const r = S.requests.find((x) => x.id === el.dataset.id);
       if (!r || r.amount > S.bal[r.pocket]) return;
@@ -813,8 +1042,7 @@ tr.flash td { animation: flash 2.4s ease-out; }
       S.txns.unshift({ id: 'n' + (++seq), date: 'Today', kind: 'pay', method: 'request', pocket: r.pocket, prov: r.prov, kid: r.kid, forLabel: r.forLabel, ref, enroll: r.ref, note: '', amount: r.amount, status: 'ok' });
       if (r.session) { const s = prov(r.prov).sessions.find((x) => x.id === r.session); if (s) s.paid = true; }
       S.requests = S.requests.filter((x) => x !== r);
-      flashProvider(ref, r.prov);
-      return toast(`Paid ${money(r.amount)} to ${prov(r.prov).short}. Ref ${ref}`);
+      return toast(`Paid ${money(r.amount)} to ${prov(r.prov).short} from ${POCKETS[r.pocket].name}`);
     },
     decline(el) {
       const r = S.requests.find((x) => x.id === el.dataset.id);
@@ -829,7 +1057,6 @@ tr.flash td { animation: flash 2.4s ease-out; }
       t.kid = d.kid; t.note = d.note.trim();
       if (d.session === 'other') { t.forLabel = d.other.trim(); t.enroll = null; t.status = 'rev'; }
       else { const s = p.sessions.find((x) => x.id === d.session); t.forLabel = `${s.name} · ${s.term}`; t.enroll = 'Enrollment ' + s.id; t.status = 'ok'; }
-      flashProvider(t.ref, t.prov);
       S.sheet = null; S.details = null;
       return toast(`Details sent to ${p.short}`);
     }
@@ -840,8 +1067,6 @@ tr.flash td { animation: flash 2.4s ease-out; }
     if (!el || el.disabled) return;
     const fn = A[el.dataset.act];
     if (!fn) return;
-    const scrollKeep = ['home', 'pocket', 'reset'].indexOf(el.dataset.act) === -1;
-    if (scrollKeep) S.keepScroll = true;
     if (fn(el) === undefined) render();
   });
 
@@ -856,24 +1081,15 @@ tr.flash td { animation: flash 2.4s ease-out; }
       document.getElementById('d-save').disabled = !(d.kid && (d.session === 'other' ? d.other.trim().length > 2 : !!d.session));
       return;
     }
-    const f = S.flow;
-    if (!f) return;
-    if (k === 'amount') {
+    const c = S.cc;
+    if (!c) return;
+    if (k === 'cc-amount') {
       const n = parseFloat(v.replace(/[^0-9.]/g, ''));
-      f.amount = isNaN(n) ? 0 : Math.round(n * 100) / 100;
-      const after = S.bal[f.pocket] - f.amount;
-      const a = document.getElementById('f-after');
-      a.className = 'after num' + (after < 0 ? ' bad' : '');
-      a.innerHTML = after < 0 ? `More than the ${money(S.bal[f.pocket])} left in ${POCKETS[f.pocket].name}` : `<span>${POCKETS[f.pocket].name} after this</span><b>${money(S.bal[f.pocket])} → ${money(after)}</b>`;
-      document.getElementById('slip-amt').textContent = money(f.amount);
-      const btn = document.getElementById('f-send');
-      btn.disabled = !flowOK(f);
-      btn.innerHTML = ic('send', 16) + 'Send ' + money(f.amount);
-      return;
-    }
-    f[k] = v;
-    const next = document.querySelector('[data-act="f-next"]');
-    if (next) next.disabled = !flowOK(f);
+      c.amount = isNaN(n) ? 0 : Math.round(n * 100) / 100;
+      document.querySelectorAll('[data-act="cc-quick"]').forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.amt) === c.amount)));
+    } else if (k === 'cc-note') c.note = v;
+    else if (k === 'cc-acct') c.acct = v;
+    ccRefresh();
   });
 
   render();
