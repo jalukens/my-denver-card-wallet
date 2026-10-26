@@ -1,0 +1,883 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}[hidden]{display:none!important}</style>
+<title>MY Denver Card Wallet Concept</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: phone prototype beside a live "provider view" ledger, design notes below.
+   Single light theme on purpose: it mirrors the My Denver Youth app's civic palette. */
+:root {
+  color-scheme: light;
+  --navy: #0D1B35;
+  --navy-mid: #162B4D;
+  --teal: #1A7A6E;
+  --teal-soft: #E6F4F1;
+  --amber: #F5A623;
+  --amber-ink: #8A5A06;
+  --amber-soft: #FDF2DD;
+  --cream: #F5F4F0;
+  --paper: #FFFFFF;
+  --line: #E4E2D9;
+  --muted: #6B6B62;
+  --faint: #8A8A82;
+  --red: #C8402B;
+  --red-soft: #FCE9E5;
+  --page: #E9EBE6;
+  --display: 'DM Serif Display', Georgia, 'Times New Roman', serif;
+  --body: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'DM Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+* { box-sizing: border-box; }
+body { background: var(--page); color: var(--navy); font-family: var(--body); font-size: 15px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; padding: 0; }
+input, textarea { font: inherit; color: var(--navy); }
+button:focus-visible, input:focus-visible, textarea:focus-visible, .opt:focus-within { outline: 2px solid var(--teal); outline-offset: 2px; }
+.mono { font-family: var(--mono); font-size: 0.92em; letter-spacing: 0.01em; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* ---------- Page frame ---------- */
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.top { padding-block: 28px 18px; }
+.eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal); }
+.top h1 { font-family: var(--display); font-weight: 400; font-size: clamp(28px, 4vw, 38px); line-height: 1.1; margin: 6px 0 8px; text-wrap: balance; }
+.top h1 span { color: var(--amber-ink); }
+.top p { margin: 0; max-width: 68ch; color: var(--muted); }
+.top-row { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: flex-end; justify-content: space-between; }
+.reset { font-size: 13px; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+.tabs { display: none; margin-top: 16px; background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 4px; gap: 4px; }
+.tabs button { flex: 1; padding: 8px 12px; border-radius: 999px; font-weight: 600; font-size: 14px; color: var(--muted); }
+.tabs button[aria-selected="true"] { background: var(--navy); color: #fff; }
+
+.stage { display: grid; grid-template-columns: 410px minmax(0, 1fr); gap: 28px; align-items: start; padding-bottom: 32px; }
+@media (max-width: 999px) {
+  .stage { grid-template-columns: minmax(0, 1fr); }
+  .tabs { display: flex; }
+  .stage[data-tab="family"] .col-provider, .stage[data-tab="provider"] .col-phone { display: none; }
+  .col-phone { display: flex; justify-content: center; }
+}
+
+/* ---------- Phone ---------- */
+.phone { width: 390px; max-width: 100%; height: 780px; background: var(--cream); border: 10px solid var(--navy); border-radius: 44px; overflow: hidden; position: relative; display: flex; flex-direction: column; box-shadow: 0 24px 60px -24px rgba(13, 27, 53, 0.45); }
+@media (max-width: 440px) { .phone { border-width: 6px; border-radius: 30px; height: 740px; } }
+.scroll { flex: 1; overflow-y: auto; scrollbar-width: none; }
+.scroll::-webkit-scrollbar { display: none; }
+
+.app-head { background: linear-gradient(180deg, #0D1B35 0%, #132B48 70%, #153540 100%); color: #fff; padding: 18px 18px 0; position: relative; }
+.ah-row { display: flex; align-items: center; justify-content: space-between; }
+.logo { display: flex; align-items: baseline; gap: 6px; font-family: var(--display); }
+.logo b { font-weight: 400; font-size: 20px; }
+.logo span { color: var(--amber); font-size: 18px; }
+.icon-btn { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.1); display: grid; place-items: center; color: rgba(255,255,255,0.85); position: relative; }
+.icon-btn .dot { position: absolute; top: 6px; right: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--amber); }
+.ah-label { margin-top: 18px; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.65); }
+.ah-total { font-family: var(--display); font-size: 44px; line-height: 1.05; margin-top: 2px; }
+.ah-sub { font-size: 13px; color: rgba(255,255,255,0.65); margin-top: 4px; }
+.ah-actions { display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px; margin-top: 16px; position: relative; z-index: 1; }
+.ridge { display: block; width: calc(100% + 36px); margin: 14px -18px 0; height: 22px; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 12px; padding: 12px 14px; font-weight: 700; font-size: 14px; line-height: 1.1; }
+.btn.amber { background: var(--amber); color: var(--navy); box-shadow: 0 6px 18px -6px rgba(245,166,35,0.7); }
+.btn.glass { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.18); }
+.btn.navy { background: var(--navy); color: #fff; }
+.btn.teal { background: var(--teal); color: #fff; }
+.btn.line { background: var(--paper); border: 1px solid var(--line); color: var(--navy); }
+.btn.quiet { color: var(--muted); font-weight: 600; padding-inline: 8px; }
+.btn.block { width: 100%; }
+.btn.sm { padding: 8px 12px; font-size: 13px; border-radius: 10px; }
+.btn[disabled] { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+
+.body { padding: 4px 16px 24px; display: flex; flex-direction: column; gap: 22px; }
+.sec-h { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+.sec-h h2 { font-family: var(--display); font-weight: 400; font-size: 19px; margin: 0; }
+.sec-h small { font-size: 12px; color: var(--faint); }
+.stack { display: flex; flex-direction: column; gap: 10px; }
+
+.req { background: var(--paper); border-radius: 16px; padding: 14px; border: 1px solid var(--line); }
+.req.swipe { background: var(--amber-soft); border-color: #F3DDB0; }
+.req-top { display: flex; gap: 10px; align-items: flex-start; }
+.req-who { font-weight: 700; font-size: 14px; }
+.req-what { font-size: 13.5px; color: var(--muted); margin-top: 2px; }
+.req-amt { margin-left: auto; font-family: var(--display); font-size: 22px; line-height: 1; white-space: nowrap; }
+.req-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.req-acts { display: flex; gap: 8px; margin-top: 12px; }
+.req-acts .btn { flex: 1; }
+
+.chip { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 600; padding: 3px 8px; border-radius: 999px; background: var(--cream); color: var(--navy-mid); white-space: nowrap; }
+.chip.ost { background: var(--teal-soft); color: var(--teal); }
+.chip.cc { background: var(--amber-soft); color: var(--amber-ink); }
+.chip.kid { background: #EEF0F6; color: var(--navy-mid); }
+
+.pk-ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; flex: none; }
+.pk-ic.ost { background: var(--teal-soft); color: var(--teal); }
+.pk-ic.cc { background: var(--amber-soft); color: var(--amber-ink); }
+.pk-ic.load { background: #EEF0F6; color: var(--navy-mid); }
+
+.pocket { display: block; width: 100%; text-align: left; background: var(--paper); border-radius: 16px; padding: 14px; border: 1px solid var(--line); }
+.pocket:hover { border-color: #CFCCC0; }
+.pk-top { display: flex; align-items: center; gap: 10px; }
+.pk-name { font-weight: 700; font-size: 15px; }
+.pk-src { font-size: 12.5px; color: var(--muted); }
+.pk-top .chev { margin-left: auto; color: var(--faint); }
+.pk-bal { font-family: var(--display); font-size: 28px; margin-top: 10px; line-height: 1.1; }
+.pk-bal small { font-family: var(--body); font-size: 13px; color: var(--muted); }
+.bar { height: 6px; border-radius: 6px; background: var(--cream); margin-top: 8px; overflow: hidden; }
+.bar i { display: block; height: 100%; border-radius: 6px; transition: width 600ms cubic-bezier(.2,.8,.2,1); }
+.bar.ost i { background: var(--teal); }
+.bar.cc i { background: var(--amber); }
+.pk-foot { font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+.tx-list { background: var(--paper); border-radius: 16px; border: 1px solid var(--line); }
+.tx { display: flex; gap: 10px; padding: 12px 14px; }
+.tx + .tx { border-top: 1px solid var(--line); }
+.tx-main { flex: 1; min-width: 0; }
+.tx-row { display: flex; justify-content: space-between; gap: 8px; }
+.tx-title { font-weight: 700; font-size: 14px; }
+.tx-amt { font-weight: 700; font-size: 14px; white-space: nowrap; }
+.tx-amt.in { color: var(--teal); }
+.tx-for { font-size: 13px; color: var(--navy-mid); margin-top: 1px; }
+.tx-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-top: 6px; font-size: 12px; color: var(--faint); }
+.tx-note { font-size: 12.5px; color: var(--muted); margin-top: 6px; padding-left: 8px; border-left: 2px solid var(--line); overflow-wrap: anywhere; }
+.st { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 600; }
+.st.ok { color: var(--teal); }
+.st.rev { color: var(--navy-mid); }
+.st.need { color: var(--amber-ink); }
+.linkbtn { font-size: 12px; font-weight: 700; color: var(--amber-ink); text-decoration: underline; text-underline-offset: 2px; }
+
+/* sub-page header */
+.sub-head { position: sticky; top: 0; z-index: 3; display: flex; align-items: center; gap: 8px; padding: 12px 12px; background: var(--paper); border-bottom: 1px solid var(--line); }
+.sub-head h2 { font-family: var(--display); font-weight: 400; font-size: 18px; margin: 0; flex: 1; text-align: center; }
+.sub-head .sp { width: 32px; }
+.back { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; color: var(--muted); }
+.back:hover { background: var(--cream); }
+.rules { list-style: none; margin: 0; padding: 0; background: var(--paper); border: 1px solid var(--line); border-radius: 16px; }
+.rules li { display: flex; gap: 10px; padding: 11px 14px; font-size: 13.5px; }
+.rules li + li { border-top: 1px solid var(--line); }
+.rules svg { flex: none; margin-top: 2px; color: var(--teal); }
+.prov-row { display: flex; align-items: center; gap: 10px; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; }
+.prov-row > div { flex: 1; min-width: 0; }
+.prov-row b { display: block; font-size: 14px; }
+.prov-row span { font-size: 12.5px; color: var(--muted); }
+.prov-row.blocked { background: transparent; border-style: dashed; }
+.prov-row.blocked b { color: var(--muted); }
+.prov-row.blocked > div span { color: var(--red); }
+
+/* bottom nav */
+.nav { display: grid; grid-template-columns: repeat(5, 1fr); background: var(--paper); border-top: 1px solid var(--line); padding: 4px 0 10px; flex: none; }
+.nav button { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 2px; font-size: 10.5px; color: var(--faint); padding-top: 6px; }
+.nav .feat { margin-top: -18px; }
+.nav .feat i { width: 48px; height: 48px; border-radius: 50%; background: var(--amber); color: var(--navy); display: grid; place-items: center; box-shadow: 0 4px 16px rgba(245,166,35,0.45); border: 3px solid var(--paper); }
+.nav .on { color: var(--teal); font-weight: 700; }
+
+/* sheets */
+.backdrop { position: absolute; inset: 0; background: rgba(13,27,53,0.45); z-index: 20; animation: fade 160ms ease-out; }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; max-height: 92%; background: var(--cream); border-radius: 24px 24px 0 0; z-index: 21; display: flex; flex-direction: column; animation: up 220ms cubic-bezier(.2,.8,.2,1); }
+.sheet-head { display: flex; align-items: center; gap: 6px; padding: 12px 12px 8px; }
+.sheet-head h3 { margin: 0; flex: 1; text-align: center; font-family: var(--display); font-weight: 400; font-size: 18px; }
+.steps { display: flex; gap: 4px; padding: 0 18px 10px; }
+.steps i { flex: 1; height: 3px; border-radius: 3px; background: var(--line); }
+.steps i.on { background: var(--teal); }
+.sheet-body { overflow-y: auto; padding: 4px 16px 16px; display: flex; flex-direction: column; gap: 16px; }
+.sheet-foot { padding: 12px 16px 16px; border-top: 1px solid var(--line); background: var(--cream); }
+.q { font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+.q small { font-weight: 500; color: var(--faint); }
+.hint { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+@keyframes up { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .sheet, .backdrop, .flash { animation: none !important; } .bar i { transition: none; } }
+
+.opt { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: var(--paper); border: 1.5px solid var(--line); border-radius: 14px; padding: 12px; }
+.opt:hover:not([disabled]) { border-color: #C9C6B9; }
+.opt[aria-pressed="true"] { border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-soft); }
+.opt[disabled] { opacity: 0.55; cursor: not-allowed; background: transparent; }
+.opt .grow { flex: 1; min-width: 0; }
+.opt b { display: block; font-size: 14px; }
+.opt span.s { display: block; font-size: 12.5px; color: var(--muted); }
+.opt .right { text-align: right; font-weight: 700; font-size: 14px; white-space: nowrap; }
+.radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #C9C6B9; flex: none; display: grid; place-items: center; }
+.opt[aria-pressed="true"] .radio { border-color: var(--teal); }
+.opt[aria-pressed="true"] .radio::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--teal); }
+.kids { display: flex; flex-wrap: wrap; gap: 8px; }
+.kid { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px 8px 8px; border-radius: 999px; background: var(--paper); border: 1.5px solid var(--line); font-weight: 600; font-size: 14px; }
+.kid i { width: 26px; height: 26px; border-radius: 50%; background: #EEF0F6; display: grid; place-items: center; font-style: normal; font-size: 12px; font-weight: 700; color: var(--navy-mid); }
+.kid[aria-pressed="true"] { border-color: var(--teal); background: var(--teal-soft); }
+.kid[aria-pressed="true"] i { background: var(--teal); color: #fff; }
+.field { width: 100%; background: var(--paper); border: 1.5px solid var(--line); border-radius: 12px; padding: 10px 12px; font-size: 14px; }
+textarea.field { resize: none; min-height: 72px; }
+.field:focus { border-color: var(--teal); outline: none; }
+.amt-wrap { display: flex; align-items: center; background: var(--paper); border: 1.5px solid var(--line); border-radius: 14px; padding: 6px 14px; }
+.amt-wrap span { font-family: var(--display); font-size: 30px; color: var(--muted); }
+.amt-wrap input { border: 0; outline: 0; font-family: var(--display); font-size: 34px; width: 100%; background: transparent; padding: 4px; }
+.after { display: flex; justify-content: space-between; font-size: 13px; margin-top: 8px; color: var(--muted); }
+.after b { color: var(--navy); }
+.after.bad b, .after.bad { color: var(--red); }
+.badge { font-size: 10.5px; font-weight: 700; letter-spacing: 0.03em; padding: 2px 7px; border-radius: 6px; background: var(--teal-soft); color: var(--teal); margin-left: 6px; vertical-align: 1px; }
+.badge.amber { background: var(--amber-soft); color: var(--amber-ink); }
+.badge.gray { background: var(--cream); color: var(--muted); }
+
+/* remittance slip */
+.slip { background: var(--paper); border-radius: 14px; border: 1px dashed #BDB9AA; overflow: hidden; }
+.slip-h { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: #F7F6F1; border-bottom: 1px dashed #BDB9AA; font-size: 12px; color: var(--muted); }
+.slip dl { margin: 0; padding: 8px 14px 12px; display: grid; grid-template-columns: 96px minmax(0,1fr); gap: 6px 10px; font-size: 13px; }
+.slip dt { color: var(--faint); }
+.slip dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.slip-f { padding: 9px 14px; font-size: 12.5px; font-weight: 600; border-top: 1px solid var(--line); display: flex; gap: 6px; align-items: center; }
+.slip-f.ok { color: var(--teal); background: var(--teal-soft); }
+.slip-f.rev { color: var(--amber-ink); background: var(--amber-soft); }
+
+.done { text-align: center; padding: 18px 8px 4px; }
+.done .tick { width: 64px; height: 64px; border-radius: 50%; background: var(--teal); color: #fff; display: grid; place-items: center; margin: 0 auto 12px; }
+.done h4 { font-family: var(--display); font-weight: 400; font-size: 24px; margin: 0 0 6px; }
+.done p { margin: 0; color: var(--muted); font-size: 14px; }
+
+.vcard { aspect-ratio: 1.586; max-width: 100%; border-radius: 18px; padding: 18px; color: #fff; background: radial-gradient(120% 140% at 100% 0%, #1F6F67 0%, #162B4D 45%, #0D1B35 100%); display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; }
+.vcard svg.mtn { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; opacity: 0.12; }
+.vcard .l1 { display: flex; justify-content: space-between; align-items: center; position: relative; }
+.vcard .nm { font-family: var(--mono); letter-spacing: 0.14em; font-size: 15px; position: relative; }
+.vcard .who { font-size: 12px; opacity: 0.75; position: relative; }
+
+.toast { position: absolute; left: 16px; right: 16px; bottom: 84px; z-index: 40; background: var(--navy); color: #fff; padding: 10px 14px; border-radius: 12px; font-size: 13.5px; text-align: center; animation: up 200ms ease-out; }
+
+/* ---------- Provider panel ---------- */
+.panel { background: var(--paper); border-radius: 20px; border: 1px solid var(--line); overflow: hidden; }
+.panel-h { padding: 18px 20px 14px; border-bottom: 1px solid var(--line); background: #FAFAF7; }
+.panel-h h2 { font-family: var(--display); font-weight: 400; font-size: 24px; margin: 4px 0 4px; }
+.panel-h p { margin: 0; color: var(--muted); font-size: 13.5px; max-width: 62ch; }
+.pv-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+.pv-tabs button { font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--muted); }
+.pv-tabs button[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: #fff; }
+.pv-sum { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); border-bottom: 1px solid var(--line); }
+.pv-sum div { padding: 14px 20px; }
+.pv-sum div + div { border-left: 1px solid var(--line); }
+.pv-sum b { display: block; font-family: var(--display); font-weight: 400; font-size: 26px; line-height: 1.1; }
+.pv-sum span { font-size: 12px; color: var(--muted); }
+@media (max-width: 560px) { .pv-sum { grid-template-columns: 1fr; } .pv-sum div + div { border-left: 0; border-top: 1px solid var(--line); } .pv-sum div { padding: 10px 16px; } }
+.pv-body { padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 16px; }
+.pv-body h3 { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); margin: 0 0 8px; font-weight: 700; }
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 13px; }
+th { text-align: left; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); font-weight: 700; padding: 9px 12px; background: #FAFAF7; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+td.amt { text-align: right; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+th.amt { text-align: right; }
+td .sub { display: block; color: var(--faint); font-size: 12px; }
+td.note { color: var(--muted); max-width: 200px; overflow-wrap: anywhere; }
+.pill { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 700; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+.pill.ok { background: var(--teal-soft); color: var(--teal); }
+.pill.rev { background: #EEF0F6; color: var(--navy-mid); }
+.pill.need { background: var(--red-soft); color: var(--red); }
+.pill.wait { background: var(--amber-soft); color: var(--amber-ink); }
+tr.flash td { animation: flash 2.4s ease-out; }
+@keyframes flash { 0%, 30% { background: #FFF4D6; } 100% { background: transparent; } }
+.empty { padding: 18px; text-align: center; color: var(--faint); font-size: 13.5px; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 12.5px; color: var(--muted); }
+.legend span { display: inline-flex; gap: 6px; align-items: center; }
+
+/* ---------- Notes ---------- */
+.notes { padding-block: 8px 48px; }
+.notes > h2 { font-family: var(--display); font-weight: 400; font-size: 26px; margin: 0 0 14px; }
+.ncols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 900px) { .ncols { grid-template-columns: minmax(0, 1fr); } }
+.ncol { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; }
+.ncol h3 { margin: 0 0 10px; font-size: 15px; }
+.ncol ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.ncol li { font-size: 13.5px; color: var(--navy-mid); }
+.ncol li b { color: var(--navy); }
+.tag { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 6px; border-radius: 5px; margin-right: 6px; vertical-align: 1px; }
+.tag.in { background: var(--teal-soft); color: var(--teal); }
+.tag.tbd { background: var(--amber-soft); color: var(--amber-ink); }
+</style>
+
+<header class="top wrap">
+  <div class="top-row">
+    <div>
+      <div class="eyebrow">My Denver Youth · Wallet concept · Shared for feedback</div>
+      <h1>MY Denver Card <span>Wallet</span></h1>
+      <p>One wallet for out-of-school funds and the childcare subsidy. Families can direct a payment to an approved provider and attach who it's for and what it covers, so the provider can match it to a sign-up without a phone call. Click through the phone; the provider's ledger on the right updates as you go.</p>
+    </div>
+    <button class="reset" data-act="reset">Reset demo</button>
+  </div>
+  <div class="tabs" role="tablist" id="tabs">
+    <button role="tab" data-act="tab" data-id="family" aria-selected="true">Family app</button>
+    <button role="tab" data-act="tab" data-id="provider" aria-selected="false">What the provider sees</button>
+  </div>
+</header>
+
+<main class="stage wrap" id="stage" data-tab="family">
+  <div class="col-phone"><div class="phone" id="phone"></div></div>
+  <div class="col-provider" id="provider"></div>
+</main>
+
+<section class="notes wrap">
+  <h2>For discussion</h2>
+  <div class="ncols">
+    <div class="ncol">
+      <h3>What this version adds</h3>
+      <ul>
+        <li><b>Wallet is the center of the app.</b> It's the middle nav button and shows one total across funding pockets.</li>
+        <li><b>Two pockets with their own rules.</b> Out-of-school funds (My Spark) and the childcare subsidy (CCCAP) each limit which kids and which approved providers they can pay.</li>
+        <li><b>Pay a provider from the app.</b> Pick the pocket and an approved provider, then say which child and which sign-up or care period the payment covers. The balance drops right away.</li>
+        <li><b>The card still works at the counter.</b> It's restricted to approved providers, and each swipe asks the family to add details afterward.</li>
+      </ul>
+    </div>
+    <div class="ncol">
+      <h3>Making reconciliation easier</h3>
+      <ul>
+        <li><span class="tag in">In prototype</span><b>Structured payment details, not just a memo.</b> Each payment carries the child, the enrollment ID or care period, and the provider's account number. A free-text note is optional.</li>
+        <li><span class="tag in">In prototype</span><b>A reference code on every payment</b>, shown to both the family and the provider.</li>
+        <li><span class="tag in">In prototype</span><b>Provider payment requests.</b> The provider sends a request tied to an enrollment or invoice, and the family approves it. This is the closest we get to joining registration and payment without building registration for every provider.</li>
+        <li><span class="tag in">In prototype</span><b>Add details after a card swipe</b>, so tap-to-pay purchases don't end up as unmatched deposits.</li>
+        <li><span class="tag tbd">To discuss</span><b>Pay at checkout</b> when registering in the app. This reuses the existing funding waterfall, so the payment is never separate from the sign-up.</li>
+        <li><span class="tag tbd">To discuss</span><b>A provider export or integration</b>: a downloadable statement first, then a feed into the registration and billing tools providers already use.</li>
+      </ul>
+    </div>
+    <div class="ncol">
+      <h3>Questions to settle</h3>
+      <ul>
+        <li><b>How does CCCAP actually move?</b> Today the subsidy pays providers directly based on attendance. Would a wallet sit alongside that or replace it? This needs early input from the state and county administrators.</li>
+        <li><b>Who approves providers</b> for each pocket, and how often does that list sync?</li>
+        <li><b>How much child information should providers see?</b> The prototype shows first name and last initial.</li>
+        <li><b>Parent fees and overages:</b> how does the family pay what the pocket doesn't cover?</li>
+        <li><b>Timing of provider requests:</b> what happens to a request the family never approves, and how do refunds return to a pocket?</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {
+  // ---------- Icons ----------
+  const P = {
+    home: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+    compass: '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/>',
+    wallet: '<path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h14a2 2 0 0 1 2 2v3h-4a2 2 0 0 0 0 4h4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5"/>',
+    cal: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',
+    user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+    back: '<path d="m15 18-6-6 6-6"/>',
+    x: '<path d="M18 6 6 18M6 6l12 12"/>',
+    check: '<path d="m5 12 5 5L20 7"/>',
+    chev: '<path d="m9 18 6-6-6-6"/>',
+    send: '<path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/>',
+    bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+    card: '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    heart: '<path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    alert: '<circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>',
+    inbox: '<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
+    lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+    tap: '<path d="M2 12a10 10 0 0 1 10-10M6 12a6 6 0 0 1 6-6M10 12a2 2 0 0 1 2-2"/>'
+  };
+  const ic = (n, s = 18) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const money = (n) => '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 });
+
+  // ---------- Reference data ----------
+  const FAMILY = 'Garcia';
+  const KIDS = {
+    sofia: { name: 'Sofia', age: 12 },
+    diego: { name: 'Diego', age: 7 },
+    lucia: { name: 'Lucía', age: 3 }
+  };
+  const POCKETS = {
+    ost: {
+      name: 'Out-of-School', source: 'My Spark', icon: 'sun', kids: ['sofia', 'diego'], max: 1000,
+      foot: 'Approved activity providers · through Aug 31, 2027',
+      rules: [
+        'For Sofia and Diego',
+        'After-school, summer and enrichment providers approved by My Spark',
+        'Pay in the app, approve a provider’s request, or tap the card at the provider',
+        'Unused funds stay available through Aug 31, 2027'
+      ]
+    },
+    cc: {
+      name: 'Childcare', source: 'CCCAP subsidy', icon: 'heart', kids: ['lucia'], max: 1180,
+      foot: 'October authorization · next one loads Nov 1',
+      rules: [
+        'For Lucía',
+        'Licensed childcare providers approved for CCCAP',
+        'A new monthly authorization loads on the 1st',
+        'Your monthly parent fee is paid to the provider separately'
+      ]
+    }
+  };
+  const PERIODS = [
+    { id: 'p1', label: 'Oct 27 – Oct 31', weeks: 1 },
+    { id: 'p2', label: 'Nov 3 – Nov 14', weeks: 2 },
+    { id: 'p3', label: 'November, 4 weeks', weeks: 4 }
+  ];
+  function freshProviders() {
+    return [
+      { id: 'dsa', name: 'Denver STEM Alliance', short: 'STEM Alliance', pocket: 'ost', sub: 'Robotics and coding', sessions: [
+        { id: 'DSA-2291', name: 'Robotics Club', term: 'Winter 2027', dates: 'Jan 5 – Mar 11', price: 180, kid: 'sofia' },
+        { id: 'DSA-2310', name: 'Code Explorers', term: 'Winter 2027', dates: 'Jan 7 – Mar 4', price: 150 }
+      ] },
+      { id: 'dpr', name: 'Denver Parks & Recreation', short: 'Parks & Rec', pocket: 'ost', sub: 'Sports and swim', sessions: [
+        { id: 'DPR-88530', name: 'Swim Lessons, Level 2', term: 'Late fall 2026', dates: 'Nov 3 – Dec 12', price: 40, kid: 'diego' },
+        { id: 'DPR-88412', name: 'Soccer Stars', term: 'Spring 2027', dates: 'Mar 2 – May 14', price: 100 }
+      ] },
+      { id: 'cprd', name: 'Cleo Parker Robinson Dance', short: 'Cleo Parker Robinson', pocket: 'ost', sub: 'Dance', sessions: [
+        { id: 'CPR-1207', name: 'Creative Dance', term: 'Winter 2027', dates: 'Jan 10 – Mar 21', price: 120 }
+      ] },
+      { id: 'mhtp', name: 'Mile High Test Prep', pocket: 'ost', blocked: 'Not an approved My Spark provider' },
+      { id: 'ls', name: 'Little Sprouts Early Learning', short: 'Little Sprouts', pocket: 'cc', sub: 'Licensed center · Sunnyside', weekly: 295, acct: 'LS-0193' },
+      { id: 'rosa', name: 'Rosa’s Family Child Care', short: 'Rosa’s', pocket: 'cc', sub: 'Licensed home · Westwood', weekly: 240, acct: '' },
+      { id: 'sunrise', name: 'Sunrise Drop-In Play', pocket: 'cc', blocked: 'Not a licensed childcare provider' }
+    ];
+  }
+  function freshState() {
+    return {
+      bal: { ost: 710, cc: 590 },
+      providers: freshProviders(),
+      txns: [
+        { id: 't5', date: 'Oct 20', kind: 'pay', method: 'card', pocket: 'ost', prov: 'dpr', kid: null, forLabel: null, ref: 'MDC-8HW2', enroll: null, note: '', amount: 40, status: 'need' },
+        { id: 't4', date: 'Oct 14', kind: 'pay', method: 'request', pocket: 'cc', prov: 'ls', kid: 'lucia', forLabel: 'Tuition · Oct 13 – Oct 24', ref: 'MDC-3RTP', enroll: 'Invoice LS-1031', note: '', amount: 590, status: 'ok' },
+        { id: 't3', date: 'Oct 1', kind: 'load', pocket: 'cc', title: 'October childcare authorization', amount: 1180 },
+        { id: 't2', date: 'Sep 30', kind: 'pay', method: 'app', pocket: 'ost', prov: 'dsa', kid: 'sofia', forLabel: 'Code Explorers · Fall 2026', ref: 'MDC-4QJ2', enroll: 'Enrollment DSA-2187', note: 'Sofia will miss Oct 9 for a school field trip.', amount: 150, status: 'ok' },
+        { id: 't1', date: 'Sep 12', kind: 'pay', method: 'app', pocket: 'ost', prov: 'dpr', kid: 'diego', forLabel: 'Soccer Stars · Fall 2026', ref: 'MDC-9KD1', enroll: 'Enrollment DPR-87120', note: 'Tue/Thu group with Coach Ana, please.', amount: 100, status: 'ok' },
+        { id: 't0', date: 'Sep 1', kind: 'load', pocket: 'ost', title: 'My Spark 2026–27 funds added', amount: 1000 }
+      ],
+      requests: [
+        { id: 'r1', prov: 'ls', pocket: 'cc', kid: 'lucia', forLabel: 'Tuition · Oct 27 – Oct 31', ref: 'Invoice LS-1042', amount: 295, sent: 'Oct 24' },
+        { id: 'r2', prov: 'dsa', pocket: 'ost', kid: 'sofia', forLabel: 'Robotics Club · Winter 2027', ref: 'Enrollment DSA-2291', session: 'DSA-2291', amount: 180, sent: 'Oct 22' }
+      ],
+      screen: 'wallet',
+      sheet: null,
+      flow: null,
+      details: null,
+      provView: 'dsa',
+      tab: 'family',
+      flash: null,
+      toast: null
+    };
+  }
+  let S = freshState();
+  const prov = (id) => S.providers.find((p) => p.id === id);
+  const kidShort = (k) => (k ? KIDS[k].name + ' ' + FAMILY[0] + '.' : '');
+  const total = () => S.bal.ost + S.bal.cc;
+  let seq = 0;
+  function newRef() {
+    const a = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let r = 'MDC-';
+    for (let i = 0; i < 4; i++) r += a[Math.floor(Math.random() * a.length)];
+    return r;
+  }
+
+  // ---------- Phone: shared pieces ----------
+  function navHTML() {
+    const items = [['home', 'Home'], ['compass', 'Explore'], ['wallet', 'Wallet'], ['cal', 'Calendar'], ['user', 'Profile']];
+    return `<nav class="nav">${items.map(([i, l]) => i === 'wallet'
+      ? `<button class="feat on" data-act="home" aria-label="Wallet"><i>${ic('wallet', 22)}</i>Wallet</button>`
+      : `<button data-act="soon" data-what="${l}">${ic(i, 20)}${l}</button>`).join('')}</nav>`;
+  }
+  function txHTML(t) {
+    if (t.kind === 'load') {
+      return `<div class="tx"><div class="pk-ic load">${ic('plus', 16)}</div><div class="tx-main">
+        <div class="tx-row"><span class="tx-title">${esc(t.title)}</span><span class="tx-amt in num">+${money(t.amount)}</span></div>
+        <div class="tx-meta"><span class="chip ${t.pocket}">${POCKETS[t.pocket].name}</span><span>${t.date}</span></div></div></div>`;
+    }
+    const p = prov(t.prov);
+    const how = t.method === 'card' ? 'Card tap' : t.method === 'request' ? 'Provider request' : 'Paid in app';
+    let st;
+    if (t.status === 'ok') st = `<span class="st ok">${ic('check', 13)}Matched by provider</span>`;
+    else if (t.status === 'rev') st = `<span class="st rev">${ic('inbox', 13)}Sent with details</span>`;
+    else st = `<button class="linkbtn" data-act="details" data-id="${t.id}">Add details</button>`;
+    return `<div class="tx"><div class="pk-ic ${t.pocket}">${ic(t.method === 'card' ? 'tap' : POCKETS[t.pocket].icon, 16)}</div><div class="tx-main">
+      <div class="tx-row"><span class="tx-title">${esc(p.name)}</span><span class="tx-amt num">−${money(t.amount)}</span></div>
+      <div class="tx-for">${t.forLabel ? esc(t.forLabel) : '<span style="color:var(--amber-ink)">Who and what is this for?</span>'}</div>
+      <div class="tx-meta">${t.kid ? `<span class="chip kid">${KIDS[t.kid].name}</span>` : ''}<span>${t.date} · ${how}</span><span class="mono">${t.ref}</span></div>
+      ${t.note ? `<div class="tx-note">“${esc(t.note)}”</div>` : ''}
+      <div class="tx-meta">${st}</div></div></div>`;
+  }
+  function pocketCard(k) {
+    const pk = POCKETS[k], b = S.bal[k];
+    const kids = pk.kids.map((x) => KIDS[x].name).join(' & ');
+    return `<button class="pocket" data-act="pocket" data-id="${k}">
+      <div class="pk-top"><span class="pk-ic ${k}">${ic(pk.icon, 17)}</span><div><div class="pk-name">${pk.name}</div><div class="pk-src">${pk.source} · ${kids}</div></div><span class="chev">${ic('chev', 18)}</span></div>
+      <div class="pk-bal num">${money(b)} <small>left of ${money(pk.max)}</small></div>
+      <div class="bar ${k}"><i style="width:${Math.max(0, (b / pk.max) * 100)}%"></i></div>
+      <div class="pk-foot">${pk.foot}</div></button>`;
+  }
+
+  function blockedRow(p) {
+    return `<div class="prov-row blocked"><span class="pk-ic load">${ic('lock', 15)}</span><div><b>${esc(p.name)}</b><span>${esc(p.blocked)}</span></div></div>`;
+  }
+
+  // ---------- Phone: screens ----------
+  function walletScreen() {
+    const needs = S.txns.filter((t) => t.status === 'need');
+    const reqs = S.requests;
+    const ask = reqs.length + needs.length;
+    return `<div class="app-head">
+        <div class="ah-row"><div class="logo"><b>MY</b><span>Denver Card</span></div>
+          <button class="icon-btn" data-act="soon" data-what="Notifications" aria-label="Notifications">${ic('bell', 16)}${ask ? '<span class="dot"></span>' : ''}</button></div>
+        <div class="ah-label">Available to spend</div>
+        <div class="ah-total num">${money(total())}</div>
+        <div class="ah-sub">${FAMILY} family · card ending 4821</div>
+        <div class="ah-actions">
+          <button class="btn amber" data-act="pay">${ic('send', 16)}Pay a provider</button>
+          <button class="btn glass" data-act="showcard">${ic('card', 16)}Show card</button>
+        </div>
+        <svg class="ridge" viewBox="0 0 400 22" preserveAspectRatio="none" aria-hidden="true"><polygon points="0,22 0,15 45,18 85,6 125,14 165,2 210,12 255,4 295,11 335,5 370,14 400,9 400,22" fill="#F5F4F0"/></svg>
+      </div>
+      <div class="body">
+        ${ask ? `<section><div class="sec-h"><h2>Needs your OK</h2><small>${ask} item${ask > 1 ? 's' : ''}</small></div><div class="stack">
+          ${reqs.map((r) => { const p = prov(r.prov); return `<div class="req">
+            <div class="req-top"><span class="pk-ic ${r.pocket}">${ic('inbox', 16)}</span><div><div class="req-who">${esc(p.name)}</div><div class="req-what">Requests payment for ${KIDS[r.kid].name}: ${esc(r.forLabel)}</div></div><div class="req-amt num">${money(r.amount)}</div></div>
+            <div class="req-tags"><span class="chip ${r.pocket}">From ${POCKETS[r.pocket].name}</span><span class="chip">${esc(r.ref)}</span><span class="chip">Sent ${r.sent}</span></div>
+            <div class="req-acts"><button class="btn quiet sm" data-act="decline" data-id="${r.id}">Decline</button><button class="btn teal sm" data-act="approve" data-id="${r.id}" ${r.amount > S.bal[r.pocket] ? 'disabled' : ''}>Approve and pay</button></div>
+          </div>`; }).join('')}
+          ${needs.map((t) => `<div class="req swipe">
+            <div class="req-top"><span class="pk-ic cc">${ic('tap', 16)}</span><div><div class="req-who">Card tap at ${esc(prov(t.prov).name)}</div><div class="req-what">Tell them who and what it was for so they can match the payment.</div></div><div class="req-amt num">${money(t.amount)}</div></div>
+            <div class="req-acts"><button class="btn navy sm" data-act="details" data-id="${t.id}">Add details</button></div>
+          </div>`).join('')}
+        </div></section>` : ''}
+        <section><div class="sec-h"><h2>Your funding</h2></div><div class="stack">${pocketCard('ost')}${pocketCard('cc')}</div></section>
+        <section><div class="sec-h"><h2>Activity</h2></div><div class="tx-list">${S.txns.map(txHTML).join('')}</div></section>
+      </div>`;
+  }
+  function pocketScreen(k) {
+    const pk = POCKETS[k], b = S.bal[k];
+    const provs = S.providers.filter((p) => p.pocket === k && !p.blocked);
+    const txns = S.txns.filter((t) => t.pocket === k);
+    return `<div class="sub-head"><button class="back" data-act="home" aria-label="Back">${ic('back', 20)}</button><h2>${pk.name}</h2><span class="sp"></span></div>
+      <div class="body" style="padding-top:16px">
+        <div class="pocket" style="cursor:default">
+          <div class="pk-top"><span class="pk-ic ${k}">${ic(pk.icon, 17)}</span><div><div class="pk-name">${pk.source}</div><div class="pk-src">${pk.foot}</div></div></div>
+          <div class="pk-bal num">${money(b)} <small>left of ${money(pk.max)}</small></div>
+          <div class="bar ${k}"><i style="width:${(b / pk.max) * 100}%"></i></div>
+          <div class="pk-foot">${money(pk.max - b)} used</div>
+          <button class="btn amber block" style="margin-top:14px" data-act="pay" data-pocket="${k}">${ic('send', 16)}Pay from ${pk.name}</button>
+        </div>
+        <section><div class="sec-h"><h2>How it can be used</h2></div><ul class="rules">${pk.rules.map((r) => `<li>${ic('check', 15)}<span>${r}</span></li>`).join('')}</ul></section>
+        <section><div class="sec-h"><h2>Approved providers</h2><small>${provs.length} near you</small></div><div class="stack">
+          ${provs.map((p) => `<div class="prov-row"><div><b>${esc(p.name)}</b><span>${esc(p.sub)}</span></div><button class="btn line sm" data-act="pay" data-pocket="${k}" data-prov="${p.id}">Pay</button></div>`).join('')}
+        </div></section>
+        <section><div class="sec-h"><h2>Not eligible</h2><small>Payments are declined</small></div><div class="stack">
+          ${S.providers.filter((p) => p.pocket === k && p.blocked).map(blockedRow).join('')}
+        </div></section>
+        <section><div class="sec-h"><h2>Activity</h2></div><div class="tx-list">${txns.map(txHTML).join('')}</div></section>
+      </div>`;
+  }
+
+  // ---------- Pay flow ----------
+  function flowOK(f) {
+    if (f.step === 1) return !!f.pocket;
+    if (f.step === 2) return !!f.prov;
+    if (f.step === 3) {
+      if (!f.kid) return false;
+      if (f.pocket === 'ost') return f.session === 'other' ? f.other.trim().length > 2 : !!f.session;
+      return !!f.period;
+    }
+    if (f.step === 4) return f.amount > 0 && f.amount <= S.bal[f.pocket];
+    return true;
+  }
+  function flowFor(f) {
+    const p = prov(f.prov);
+    if (f.pocket === 'ost') {
+      if (f.session === 'other') return { label: f.other.trim(), enroll: null, matched: false };
+      const s = p.sessions.find((x) => x.id === f.session);
+      return { label: `${s.name} · ${s.term}`, enroll: 'Enrollment ' + s.id, matched: true };
+    }
+    const per = PERIODS.find((x) => x.id === f.period);
+    return { label: 'Tuition · ' + per.label, enroll: f.acct.trim() ? 'Account ' + f.acct.trim() : null, matched: !!f.acct.trim() };
+  }
+  function suggestedAmount(f) {
+    const p = prov(f.prov);
+    if (f.pocket === 'ost') {
+      if (f.session === 'other') return f.amount || 0;
+      return p.sessions.find((x) => x.id === f.session).price;
+    }
+    return p.weekly * PERIODS.find((x) => x.id === f.period).weeks;
+  }
+  function setProv(f, id) {
+    const p = prov(id);
+    f.prov = id; f.session = null; f.other = ''; f.period = null; f.acct = p.acct || ''; f.amount = 0;
+    const kids = POCKETS[f.pocket].kids;
+    f.kid = kids.length === 1 ? kids[0] : null;
+    if (f.pocket === 'ost') {
+      const reg = p.sessions.find((s) => s.kid && !s.paid);
+      if (reg) { f.kid = reg.kid; f.session = reg.id; }
+    }
+  }
+  function flowSheet() {
+    const f = S.flow;
+    const titles = { 1: 'Pay from', 2: 'Pay to', 3: 'What it’s for', 4: 'Review and send' };
+    let body = '', foot = '';
+    if (f.step === 1) {
+      body = `<div class="q">Which funds are you using?</div><div class="stack">${['ost', 'cc'].map((k) => `
+        <button class="opt" data-act="f-pocket" data-id="${k}" aria-pressed="${f.pocket === k}"><span class="pk-ic ${k}">${ic(POCKETS[k].icon, 17)}</span>
+          <span class="grow"><b>${POCKETS[k].name}</b><span class="s">${POCKETS[k].source} · for ${POCKETS[k].kids.map((x) => KIDS[x].name).join(' & ')}</span></span><span class="right num">${money(S.bal[k])}</span></button>`).join('')}</div>`;
+    } else if (f.step === 2) {
+      const list = S.providers.filter((p) => p.pocket === f.pocket);
+      body = `<div><div class="q">Choose a provider <small>· only approved providers can be paid</small></div><div class="stack">${list.filter((p) => !p.blocked).map((p) =>
+        `<button class="opt" data-act="f-prov" data-id="${p.id}" aria-pressed="${f.prov === p.id}"><span class="radio"></span><span class="grow"><b>${esc(p.name)}</b><span class="s">${esc(p.sub)}</span></span>${ic('chev', 16)}</button>`).join('')}</div></div>
+        <div><div class="q">Not eligible for ${POCKETS[f.pocket].name} funds</div><div class="stack">${list.filter((p) => p.blocked).map(blockedRow).join('')}</div></div>`;
+    } else if (f.step === 3) {
+      const p = prov(f.prov);
+      const kids = POCKETS[f.pocket].kids;
+      body = `<div><div class="q">Who is it for?</div><div class="kids">${kids.map((k) => `<button class="kid" data-act="f-kid" data-id="${k}" aria-pressed="${f.kid === k}"><i>${KIDS[k].name[0]}</i>${KIDS[k].name}</button>`).join('')}</div></div>`;
+      if (f.pocket === 'ost') {
+        body += `<div><div class="q">Which sign-up does this pay for?</div><div class="stack">${p.sessions.map((s) => {
+          const pending = S.requests.find((r) => r.session === s.id);
+          const tag = s.paid ? '<span class="badge gray">Paid</span>'
+            : pending ? '<span class="badge amber">Request waiting</span>'
+            : s.kid ? `<span class="badge">${KIDS[s.kid].name} is registered</span>` : '';
+          return `<button class="opt" data-act="f-session" data-id="${s.id}" aria-pressed="${f.session === s.id}" ${s.paid ? 'disabled' : ''}><span class="radio"></span>
+            <span class="grow"><b>${esc(s.name)}${tag}</b><span class="s">${s.term} · ${s.dates} · <span class="mono">${s.id}</span></span></span><span class="right num">${money(s.price)}</span></button>`; }).join('')}
+          <button class="opt" data-act="f-session" data-id="other" aria-pressed="${f.session === 'other'}"><span class="radio"></span><span class="grow"><b>Something else</b><span class="s">Describe it so the provider can find it</span></span></button>
+          ${f.session === 'other' ? `<input class="field" id="f-other" data-field="other" placeholder="e.g. Field trip fee, Nov 8" value="${esc(f.other)}" maxlength="80">` : ''}
+        </div><div class="hint">Linking a sign-up lets the provider match this payment automatically.</div></div>`;
+      } else {
+        body += `<div><div class="q">Which care period?</div><div class="stack">${PERIODS.map((per) => `
+          <button class="opt" data-act="f-period" data-id="${per.id}" aria-pressed="${f.period === per.id}"><span class="radio"></span><span class="grow"><b>${per.label}</b><span class="s">${per.weeks} week${per.weeks > 1 ? 's' : ''} at ${money(p.weekly)}/week</span></span><span class="right num">${money(p.weekly * per.weeks)}</span></button>`).join('')}</div></div>
+          <div><div class="q">Your account number at ${esc(p.short)} <small>· optional</small></div><input class="field mono" id="f-acct" data-field="acct" value="${esc(f.acct)}" placeholder="From your invoice or parent portal" maxlength="24">
+          <div class="hint">${f.acct ? 'Saved from your last payment.' : 'Adding it lets the provider match the payment automatically.'}</div></div>`;
+      }
+      body += `<div><div class="q">Note to provider <small>· optional</small></div><textarea class="field" id="f-note" data-field="note" maxlength="140" placeholder="${f.pocket === 'cc' ? 'e.g. Lucía will be out Nov 11 for a doctor’s visit' : 'e.g. She has a peanut allergy'}">${esc(f.note)}</textarea></div>`;
+    } else if (f.step === 4) {
+      const p = prov(f.prov), info = flowFor(f), after = S.bal[f.pocket] - f.amount;
+      if (!f.ref) f.ref = newRef();
+      body = `<div><div class="q">Amount</div><div class="amt-wrap"><span>$</span><input id="f-amt" data-field="amount" inputmode="decimal" value="${f.amount || ''}" placeholder="0" aria-label="Amount"></div>
+          <div class="after num ${after < 0 ? 'bad' : ''}" id="f-after">${after < 0 ? `More than the ${money(S.bal[f.pocket])} left in ${POCKETS[f.pocket].name}` : `<span>${POCKETS[f.pocket].name} after this</span><b>${money(S.bal[f.pocket])} → ${money(after)}</b>`}</div></div>
+        <div><div class="q">What ${esc(p.short)} will see</div><div class="slip">
+          <div class="slip-h"><span>MY Denver Card payment</span><span class="mono">${f.ref}</span></div>
+          <dl><dt>Family</dt><dd>${FAMILY}</dd><dt>Child</dt><dd>${kidShort(f.kid)}</dd><dt>For</dt><dd>${esc(info.label)}</dd>
+            ${info.enroll ? `<dt>${info.enroll.split(' ')[0]}</dt><dd class="mono">${esc(info.enroll.split(' ').slice(1).join(' '))}</dd>` : ''}
+            ${f.note.trim() ? `<dt>Note</dt><dd style="font-weight:500">“${esc(f.note.trim())}”</dd>` : ''}
+            <dt>Funds</dt><dd>${POCKETS[f.pocket].source}</dd><dt>Amount</dt><dd class="num" id="slip-amt">${money(f.amount || 0)}</dd></dl>
+          <div class="slip-f ${info.matched ? 'ok' : 'rev'}">${info.matched ? `${ic('check', 14)}Matches automatically to ${esc(info.enroll)}` : `${ic('inbox', 14)}Provider matches this one by hand using your details`}</div>
+        </div></div>`;
+    } else {
+      const p = prov(f.prov);
+      return `<div class="sheet-body"><div class="done"><div class="tick">${ic('check', 30)}</div><h4>${money(f.amount)} sent</h4>
+        <p>to ${esc(p.name)} for ${KIDS[f.kid].name}</p><p style="margin-top:10px">Reference <span class="mono">${f.ref}</span></p>
+        <p style="margin-top:4px">${POCKETS[f.pocket].name} balance is now <b style="color:var(--navy)">${money(S.bal[f.pocket])}</b></p></div>
+        <div class="stack"><button class="btn line block" data-act="seeprov" data-id="${p.id}">See what ${esc(p.short)} sees</button><button class="btn navy block" data-act="close">Done</button></div></div>`;
+    }
+    foot = `<div class="sheet-foot">${f.step === 4
+      ? `<button class="btn amber block" id="f-send" data-act="f-send" ${flowOK(f) ? '' : 'disabled'}>${ic('send', 16)}Send ${money(f.amount || 0)}</button>`
+      : `<button class="btn navy block" data-act="f-next" ${flowOK(f) ? '' : 'disabled'}>Continue</button>`}</div>`;
+    return `<div class="sheet-head">${f.step > f.start ? `<button class="back" data-act="f-back" aria-label="Back">${ic('back', 20)}</button>` : '<span class="sp" style="width:32px"></span>'}
+        <h3>${titles[f.step]}</h3><button class="back" data-act="close" aria-label="Close">${ic('x', 18)}</button></div>
+      <div class="steps">${[1, 2, 3, 4].map((n) => `<i class="${n <= f.step ? 'on' : ''}"></i>`).join('')}</div>
+      <div class="sheet-body">${body}</div>${foot}`;
+  }
+
+  function detailsSheet() {
+    const d = S.details, t = S.txns.find((x) => x.id === d.id), p = prov(t.prov);
+    const ok = d.kid && (d.session === 'other' ? d.other.trim().length > 2 : !!d.session);
+    return `<div class="sheet-head"><span class="sp" style="width:32px"></span><h3>Add details</h3><button class="back" data-act="close" aria-label="Close">${ic('x', 18)}</button></div>
+      <div class="sheet-body">
+        <div class="slip"><div class="slip-h"><span>Card tap · ${t.date}</span><span class="mono">${t.ref}</span></div><dl><dt>Provider</dt><dd>${esc(p.name)}</dd><dt>Amount</dt><dd class="num">${money(t.amount)}</dd></dl></div>
+        <div><div class="q">Who was it for?</div><div class="kids">${POCKETS[t.pocket].kids.map((k) => `<button class="kid" data-act="d-kid" data-id="${k}" aria-pressed="${d.kid === k}"><i>${KIDS[k].name[0]}</i>${KIDS[k].name}</button>`).join('')}</div></div>
+        <div><div class="q">What did it pay for?</div><div class="stack">${p.sessions.map((s) => `<button class="opt" data-act="d-session" data-id="${s.id}" aria-pressed="${d.session === s.id}"><span class="radio"></span><span class="grow"><b>${esc(s.name)}</b><span class="s">${s.term} · <span class="mono">${s.id}</span></span></span><span class="right num">${money(s.price)}</span></button>`).join('')}
+          <button class="opt" data-act="d-session" data-id="other" aria-pressed="${d.session === 'other'}"><span class="radio"></span><span class="grow"><b>Something else</b></span></button>
+          ${d.session === 'other' ? `<input class="field" id="d-other" data-field="d-other" placeholder="e.g. Rec center day pass" value="${esc(d.other)}" maxlength="80">` : ''}</div></div>
+        <div><div class="q">Note to provider <small>· optional</small></div><textarea class="field" id="d-note" data-field="d-note" maxlength="140">${esc(d.note)}</textarea></div>
+      </div>
+      <div class="sheet-foot"><button class="btn navy block" id="d-save" data-act="d-save" ${ok ? '' : 'disabled'}>Send details to provider</button></div>`;
+  }
+
+  function cardSheet() {
+    return `<div class="sheet-head"><span class="sp" style="width:32px"></span><h3>Your card</h3><button class="back" data-act="close" aria-label="Close">${ic('x', 18)}</button></div>
+      <div class="sheet-body">
+        <div class="vcard"><svg class="mtn" viewBox="0 0 400 80" preserveAspectRatio="none" aria-hidden="true"><polygon points="0,80 30,55 65,68 110,30 155,52 200,14 250,46 295,18 340,42 380,28 400,40 400,80" fill="#fff"/></svg>
+          <div class="l1"><div class="logo"><b>MY</b><span>Denver Card</span></div>${ic('tap', 22)}</div>
+          <div><div class="nm">•••• •••• •••• 4821</div><div class="who">MARIA ${FAMILY.toUpperCase()} · ${money(total())} available</div></div></div>
+        <ul class="rules">
+          <li>${ic('lock', 15)}<span>Works only at approved providers. Other purchases are declined.</span></li>
+          <li>${ic('check', 15)}<span>The right pocket pays automatically: childcare providers draw from Childcare, activity providers from Out-of-School.</span></li>
+          <li>${ic('inbox', 15)}<span>After each tap we’ll ask who it was for, so the provider can match the payment.</span></li>
+        </ul>
+      </div>`;
+  }
+
+  // ---------- Provider panel ----------
+  function providerPanel() {
+    const ids = ['dsa', 'dpr', 'cprd', 'ls', 'rosa'];
+    const p = prov(S.provView);
+    const rows = S.txns.filter((t) => t.kind === 'pay' && t.prov === p.id);
+    const reqs = S.requests.filter((r) => r.prov === p.id);
+    const sum = rows.reduce((a, t) => a + t.amount, 0);
+    const auto = rows.filter((t) => t.status === 'ok').length;
+    const review = rows.length - auto;
+    const pill = (t) => t.status === 'ok' ? `<span class="pill ok">${ic('check', 12)}Auto-matched</span>`
+      : t.status === 'rev' ? '<span class="pill rev">Match by hand</span>' : '<span class="pill need">Missing details</span>';
+    return `<div class="panel">
+      <div class="panel-h"><div class="eyebrow">Provider view</div><h2>${esc(p.name)}</h2>
+        <p>Deposits from MY Denver Card arrive with the family’s details attached. Each payment is matched to an enrollment, invoice or family account.</p>
+        <div class="pv-tabs">${ids.map((id) => `<button data-act="pv" data-id="${id}" aria-pressed="${id === p.id}">${esc(prov(id).short)}</button>`).join('')}</div></div>
+      <div class="pv-sum"><div><b class="num">${money(sum)}</b><span>Received from MY Denver Card</span></div><div><b class="num">${auto}</b><span>Matched automatically</span></div><div><b class="num" style="color:${review ? 'var(--red)' : 'inherit'}">${review}</b><span>Need a closer look</span></div></div>
+      <div class="pv-body">
+        ${reqs.length ? `<div><h3>Requests you sent</h3><div class="tbl-wrap"><table><thead><tr><th>Sent</th><th>Child</th><th>For</th><th>Your ref</th><th class="amt">Amount</th><th>Status</th></tr></thead><tbody>
+          ${reqs.map((r) => `<tr><td>${r.sent}</td><td>${kidShort(r.kid)}</td><td>${esc(r.forLabel)}</td><td class="mono">${esc(r.ref)}</td><td class="amt">${money(r.amount)}</td><td><span class="pill wait">Waiting on family</span></td></tr>`).join('')}
+          </tbody></table></div></div>` : ''}
+        <div><h3>Payments received</h3>${rows.length ? `<div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Reference</th><th>Child</th><th>For</th><th>Family note</th><th class="amt">Amount</th><th>Match</th></tr></thead><tbody>
+          ${rows.map((t) => `<tr class="${S.flash === t.ref ? 'flash' : ''}"><td>${t.date}<span class="sub">${t.method === 'card' ? 'Card tap' : t.method === 'request' ? 'Your request' : 'Family app'}</span></td>
+            <td class="mono">${t.ref}</td><td>${t.kid ? kidShort(t.kid) : '<span class="sub">—</span>'}<span class="sub">${FAMILY} family</span></td>
+            <td>${t.forLabel ? esc(t.forLabel) : '<span class="sub">Not provided</span>'}${t.enroll ? `<span class="sub mono">${esc(t.enroll)}</span>` : ''}</td>
+            <td class="note">${t.note ? '“' + esc(t.note) + '”' : ''}</td><td class="amt">${money(t.amount)}</td><td>${pill(t)}</td></tr>`).join('')}
+          </tbody></table></div>` : `<div class="tbl-wrap"><div class="empty">No payments from this family yet. Pay ${esc(p.short)} from the phone to see one arrive.</div></div>`}</div>
+        <div class="legend"><span><span class="pill ok">Auto-matched</span>Linked to an enrollment, invoice or account</span><span><span class="pill rev">Match by hand</span>Family described it in their own words</span><span><span class="pill need">Missing details</span>Card tap the family hasn’t annotated yet</span></div>
+      </div></div>`;
+  }
+
+  // ---------- Render ----------
+  const phone = document.getElementById('phone');
+  const provEl = document.getElementById('provider');
+  const stage = document.getElementById('stage');
+  function render() {
+    const keep = phone.querySelector('.scroll');
+    const top = keep && S.keepScroll ? keep.scrollTop : 0;
+    const screen = S.screen === 'wallet' ? walletScreen() : pocketScreen(S.screen.split(':')[1]);
+    let sheet = '';
+    if (S.sheet) {
+      const inner = S.sheet === 'flow' ? flowSheet() : S.sheet === 'details' ? detailsSheet() : cardSheet();
+      sheet = `<div class="backdrop" data-act="close"></div><div class="sheet" role="dialog" aria-modal="true">${inner}</div>`;
+    }
+    phone.innerHTML = `<div class="scroll">${screen}</div>${navHTML()}${sheet}${S.toast ? `<div class="toast" role="status">${esc(S.toast)}</div>` : ''}`;
+    if (top) phone.querySelector('.scroll').scrollTop = top;
+    S.keepScroll = false;
+    provEl.innerHTML = providerPanel();
+    stage.dataset.tab = S.tab;
+    document.querySelectorAll('#tabs button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.id === S.tab)));
+  }
+  let toastTimer;
+  function toast(msg) {
+    S.toast = msg; S.keepScroll = true; render();
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { S.toast = null; S.keepScroll = true; render(); }, 2600);
+  }
+  function flashProvider(ref, provId) {
+    S.flash = ref; S.provView = provId;
+    setTimeout(() => { S.flash = null; }, 2600);
+  }
+
+  // ---------- Actions ----------
+  const A = {
+    home() { S.screen = 'wallet'; S.sheet = null; },
+    soon(el) { return toast(`${el.dataset.what} isn’t part of this wallet prototype`); },
+    pocket(el) { S.screen = 'pocket:' + el.dataset.id; },
+    showcard() { S.sheet = 'card'; S.keepScroll = true; },
+    close() { S.sheet = null; S.flow = null; S.details = null; S.keepScroll = true; },
+    tab(el) { S.tab = el.dataset.id; S.keepScroll = true; },
+    pv(el) { S.provView = el.dataset.id; S.keepScroll = true; },
+    reset() { S = freshState(); },
+    pay(el) {
+      const f = { step: 1, start: 1, pocket: null, prov: null, kid: null, session: null, other: '', period: null, acct: '', note: '', amount: 0, ref: null };
+      if (el.dataset.pocket) { f.pocket = el.dataset.pocket; f.step = f.start = 2; }
+      if (el.dataset.prov) { setProv(f, el.dataset.prov); f.step = f.start = 3; }
+      S.flow = f; S.sheet = 'flow'; S.keepScroll = true;
+    },
+    'f-pocket'(el) { S.flow.pocket = el.dataset.id; S.flow.prov = null; S.keepScroll = true; },
+    'f-prov'(el) { setProv(S.flow, el.dataset.id); S.flow.step = 3; S.keepScroll = true; },
+    'f-kid'(el) { S.flow.kid = el.dataset.id; S.keepScroll = true; },
+    'f-session'(el) { S.flow.session = el.dataset.id; S.keepScroll = true; },
+    'f-period'(el) { S.flow.period = el.dataset.id; S.keepScroll = true; },
+    'f-next'() {
+      const f = S.flow;
+      if (!flowOK(f)) return;
+      f.step += 1;
+      if (f.step === 4) f.amount = suggestedAmount(f);
+      S.keepScroll = true;
+    },
+    'f-back'() { const f = S.flow; if (f.step > f.start) f.step -= 1; S.keepScroll = true; },
+    'f-send'() {
+      const f = S.flow;
+      if (!flowOK(f)) return;
+      const info = flowFor(f);
+      S.bal[f.pocket] = Math.round((S.bal[f.pocket] - f.amount) * 100) / 100;
+      S.txns.unshift({ id: 'n' + (++seq), date: 'Today', kind: 'pay', method: 'app', pocket: f.pocket, prov: f.prov, kid: f.kid, forLabel: info.label, ref: f.ref, enroll: info.enroll, note: f.note.trim(), amount: f.amount, status: info.matched ? 'ok' : 'rev' });
+      if (f.pocket === 'ost' && f.session !== 'other') {
+        const s = prov(f.prov).sessions.find((x) => x.id === f.session);
+        s.paid = true;
+        S.requests = S.requests.filter((r) => r.session !== s.id);
+      }
+      flashProvider(f.ref, f.prov);
+      f.step = 5; S.keepScroll = true;
+    },
+    seeprov(el) { S.provView = el.dataset.id; S.sheet = null; S.flow = null; S.tab = 'provider'; setTimeout(() => provEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 30); },
+    approve(el) {
+      const r = S.requests.find((x) => x.id === el.dataset.id);
+      if (!r || r.amount > S.bal[r.pocket]) return;
+      const ref = newRef();
+      S.bal[r.pocket] -= r.amount;
+      S.txns.unshift({ id: 'n' + (++seq), date: 'Today', kind: 'pay', method: 'request', pocket: r.pocket, prov: r.prov, kid: r.kid, forLabel: r.forLabel, ref, enroll: r.ref, note: '', amount: r.amount, status: 'ok' });
+      if (r.session) { const s = prov(r.prov).sessions.find((x) => x.id === r.session); if (s) s.paid = true; }
+      S.requests = S.requests.filter((x) => x !== r);
+      flashProvider(ref, r.prov);
+      return toast(`Paid ${money(r.amount)} to ${prov(r.prov).short}. Ref ${ref}`);
+    },
+    decline(el) {
+      const r = S.requests.find((x) => x.id === el.dataset.id);
+      S.requests = S.requests.filter((x) => x !== r);
+      return toast(`Declined. ${prov(r.prov).short} will be told to follow up with you.`);
+    },
+    details(el) { S.details = { id: el.dataset.id, kid: null, session: null, other: '', note: '' }; S.sheet = 'details'; S.keepScroll = true; },
+    'd-kid'(el) { S.details.kid = el.dataset.id; S.keepScroll = true; },
+    'd-session'(el) { S.details.session = el.dataset.id; S.keepScroll = true; },
+    'd-save'() {
+      const d = S.details, t = S.txns.find((x) => x.id === d.id), p = prov(t.prov);
+      t.kid = d.kid; t.note = d.note.trim();
+      if (d.session === 'other') { t.forLabel = d.other.trim(); t.enroll = null; t.status = 'rev'; }
+      else { const s = p.sessions.find((x) => x.id === d.session); t.forLabel = `${s.name} · ${s.term}`; t.enroll = 'Enrollment ' + s.id; t.status = 'ok'; }
+      flashProvider(t.ref, t.prov);
+      S.sheet = null; S.details = null;
+      return toast(`Details sent to ${p.short}`);
+    }
+  };
+
+  document.addEventListener('click', (e) => {
+    const el = e.target.closest('[data-act]');
+    if (!el || el.disabled) return;
+    const fn = A[el.dataset.act];
+    if (!fn) return;
+    const scrollKeep = ['home', 'pocket', 'reset'].indexOf(el.dataset.act) === -1;
+    if (scrollKeep) S.keepScroll = true;
+    if (fn(el) === undefined) render();
+  });
+
+  // Text inputs update state in place so typing never loses focus.
+  document.addEventListener('input', (e) => {
+    const k = e.target.dataset.field;
+    if (!k) return;
+    const v = e.target.value;
+    if (k === 'd-other' || k === 'd-note') {
+      S.details[k === 'd-other' ? 'other' : 'note'] = v;
+      const d = S.details;
+      document.getElementById('d-save').disabled = !(d.kid && (d.session === 'other' ? d.other.trim().length > 2 : !!d.session));
+      return;
+    }
+    const f = S.flow;
+    if (!f) return;
+    if (k === 'amount') {
+      const n = parseFloat(v.replace(/[^0-9.]/g, ''));
+      f.amount = isNaN(n) ? 0 : Math.round(n * 100) / 100;
+      const after = S.bal[f.pocket] - f.amount;
+      const a = document.getElementById('f-after');
+      a.className = 'after num' + (after < 0 ? ' bad' : '');
+      a.innerHTML = after < 0 ? `More than the ${money(S.bal[f.pocket])} left in ${POCKETS[f.pocket].name}` : `<span>${POCKETS[f.pocket].name} after this</span><b>${money(S.bal[f.pocket])} → ${money(after)}</b>`;
+      document.getElementById('slip-amt').textContent = money(f.amount);
+      const btn = document.getElementById('f-send');
+      btn.disabled = !flowOK(f);
+      btn.innerHTML = ic('send', 16) + 'Send ' + money(f.amount);
+      return;
+    }
+    f[k] = v;
+    const next = document.querySelector('[data-act="f-next"]');
+    if (next) next.disabled = !flowOK(f);
+  });
+
+  render();
+})();
+</script>
+
+</html>
